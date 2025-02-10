@@ -82,9 +82,10 @@ func main() {
 	http.ListenAndServe(CFG.Addr+":"+CFG.Port, nil)
 }
 
-func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string) {
+func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q string) {
 	out := strings.ReplaceAll(index, "{{ host }}", r.Host)
 	out = strings.ReplaceAll(out, "{{ title }}", title)
+	out = strings.ReplaceAll(out, "{{ query }}", q)
 	out = strings.ReplaceAll(out, "{{ content }}", html)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -164,7 +165,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("whatis", args...)
 	b, e := cmd.Output()
 	if len(b) < 1 || e != nil {
-		WriteHtml(w, r, "Search", fmt.Sprintf("<p>404: no resualts matching %s</p>", q))
+		WriteHtml(w, r, "Search", fmt.Sprintf("<p>404: no resualts matching %s</p>", q), q)
 		return
 	}
 	var output string
@@ -173,7 +174,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 			output += fmt.Sprintf(`<p><a href="?%s.%s">%s (%s)</a> - %s</p>%c`, line[1], line[2], line[1], line[2], line[3], 10)
 		}
 	}
-	WriteHtml(w, r, "Search", output)
+	WriteHtml(w, r, "Search", output, q)
 }
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Base(r.URL.Path)
@@ -192,9 +193,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.RawQuery
 	if name != "" {
 		man := NewManPage(name)
-		WriteHtml(w, r, man.Name, man.Html())
+		WriteHtml(w, r, man.Name, man.Html(), name)
 		return
 	}
-	WriteHtml(w, r, "Index", "")
+	WriteHtml(w, r, "Index", "", name)
 	return
 }

@@ -13,13 +13,6 @@ This Go application serves man pages over HTTP. It allows users to view, search,
 - Auto updates man pages when new packages are installed or removed using standard installation methods.
 
 
-### Contents
-- [Installation Using Apt](#installation-using-apt)
-- [Compiling From Source](#compiling-from-source)
-- [Using As Systemd Service](#using-as-systemd-service)
-- [Accessing the Web Interface](#accessing-the-web-interface)
-- [Example Usage](#example-usage)
-
 # Installation Using Apt
 
 Simply run the following commands to add my repository and install the package. This will install the latest release and automatically update the server when new versions are released.

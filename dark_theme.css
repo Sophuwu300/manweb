@@ -1,4 +1,7 @@
 
+
+
+
 			@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root{
@@ -28,7 +31,7 @@
     --rf-hover: color-mix(in srgb, var(--rf-color), var(--st-color) 40%);
 
     --dimmer: rgba(0,0,0,69);
-
+    --lessdimmer: rgba(0,0,0,20%);
 
     font-variant-ligatures: none!important;
     --font-family: var(--font, 'JetBrains Mono');
@@ -70,6 +73,65 @@ body, html {
     height: 100%;
     width: 100%;
     background-color: var(--bg-color);
+}
+.settings {
+    input {
+        &[type=range] {
+            margin: 0;
+            &[id="theme"] {
+                width: 100%;
+                --grad0: 0;
+                --grad1: 1;
+                --grad2: 2;
+                --grad3: 3;
+                --grad4: 4;
+                --grad5: 5;
+                --graddy: 18%;
+                background-image: linear-gradient(90deg, color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad0) + 2) * (min(1,var(--grad0))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad0) - 3)))))) calc(var(--grad0) * var(--graddy)),
+                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad1) + 2) * (min(1,var(--grad1))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad1) - 3)))))) calc(var(--grad1) * var(--graddy)),
+                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad2) + 2) * (min(1,var(--grad2))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad2) - 3)))))) calc(var(--grad2) * var(--graddy)),
+                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad3) + 2) * (min(1,var(--grad3))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad3) - 3)))))) calc(var(--grad3) * var(--graddy)),
+                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad4) + 2) * (min(1,var(--grad4))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad4) - 3)))))) calc(var(--grad4) * var(--graddy)),
+                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad5) + 2) * (min(1,var(--grad5))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad5) - 3)))))) calc(var(--grad5) * var(--graddy)))!important;
+          }
+            &[id="contrast"] {
+                width: 2rem;
+            }
+
+        }
+        height:1rem;
+        &[type="text"]{
+            font-size: 0.7rem;
+            padding: 0.2em 1ch;
+            margin: -0.2em -1ch;
+        }
+        border: 1px solid var(--fg-color);
+        border-radius: 0.5rem;
+        border-color: var(--fg-color);
+        background: var(--lessdimmer);
+    }
+
+    .slider::-webkit-slider-thumb, .slider::-moz-range-thumb {
+        width: calc(100% / 12);
+        min-width: 1rem;
+        background: var(--hl-color);
+        height: calc(1rem - 0.1em);
+    }
+    height: 100%;
+    tr > th {
+        width: 100%;
+        margin: 0;
+    }
+    td {
+        padding: 0.5ch;
+        margin: auto;
+    }
+    label {
+        display: contents;
+    }
+    input#font {
+       width: 100%;
+    }
 }
 table.head, table.foot {
     width: inherit;
@@ -146,7 +208,7 @@ header {
     flex-direction: row;
     align-content: center;
     justify-content: center;
-    
+
     form, div{
         display: contents;
         * {
@@ -193,10 +255,13 @@ header {
     }
 }
 
-.content{
+
+main{
     width: calc( 100% - 1em );
-    margin: 0;
-    overflow-y: scroll;
+    height: 100%;
+    margin: 0 auto 0 auto;
+    overflow: auto;
     padding: 0;
 }
-		
+
+

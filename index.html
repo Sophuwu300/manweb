@@ -20,7 +20,7 @@
 		</div>
 		<form method="post">
 			<h3>Find:</h3>
-			<input type="text" name="q" autocomplete="off">
+			<input type="text" name="q" autocomplete="off" value="{{ query }}">
 			<input type="submit" value="Search">
 		</form>
 		<div>
@@ -29,8 +29,32 @@
 		</div>
 	</header>
 
-	<div class="content">
+	<main>
+		<article class="settings">
+			<table>
+				<tr>
+					<td>Theme</td>
+					<td>		  <input type="range" min="0" max="5" value="4" id="theme" class="slider"></td>
+				</tr>
+				<tr class="yeet">
+					<td>
+						<label>High Contrast</label>
+						<input type="range" min="0" max="1" value="0" id="contrast" class="slider"></td>
+					<td>
+						<label>Font Size</label>
+						<input type="text" id="fontsize" placeholder="18px"></td>
+				</tr>
+				<tr>
+					<td>Custom Font</td>
+					<td><input type="text" id="font"></td>
+				</tr>
+				<tr>
+
+				</tr>
+			</table>
+
+	</article>
 		{{ content }}
-	</div>
+	</main>
 	</body>
 </html>
