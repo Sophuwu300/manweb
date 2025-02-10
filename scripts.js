@@ -62,3 +62,25 @@ function setStyle() {
     tmp += "}";
     style.innerText = tmp + styleCss;
 }
+
+document.addEventListener("DOMContentLoaded", setStyle);
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("SetButt").addEventListener("click", function () {
+        let ar = ["--theme", "--contrast", "--font", "--font-size"];
+        for (let key of ar) {
+            let value = localStorage.getItem(key);
+            if (value) document.getElementById(key.replaceAll("-", "")).value = value;
+        }
+        document.querySelector("article.settings").classList.toggle("hidden");
+    });
+    document.getElementById("contrast").addEventListener("mousedown", function () {
+            let elem = document.getElementById("contrast");
+            if (elem.value == 1) elem.value = 0;
+            else elem.value = 1;
+            elem.classList.toggle("togii");
+            if (SaveValue("--contrast", elem.value))setStyle();
+    });
+    document.getElementById("theme").addEventListener("input", function () {
+        if (SaveValue("--theme", document.getElementById("theme").value))setStyle();
+    });
+});

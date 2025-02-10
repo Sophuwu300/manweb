@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="utf-8">
 		<title>{{ title }}@{{ hostname }}</title>
-		<!--link rel="stylesheet" type="text/css" href="style.css"-->
 		<style id="styleCss">
 			{{ cssContent }}
 		</style>
@@ -30,29 +29,26 @@
 	</header>
 
 	<main>
-		<article class="settings">
+		<article class="settings hidden">
 			<table>
 				<tr>
 					<td>Theme</td>
-					<td>		  <input type="range" min="0" max="5" value="4" id="theme" class="slider"></td>
+					<td><input type="range" min="0" max="5" value="4" id="theme" class="slider"></td>
 				</tr>
 				<tr class="yeet">
 					<td>
 						<label>High Contrast</label>
-						<input type="range" min="0" max="1" value="0" id="contrast" class="slider"></td>
+						<input readonly type="range" min="0" max="1" value="0" id="contrast" class="slider"></td>
 					<td>
 						<label>Font Size</label>
-						<input type="text" id="fontsize" placeholder="18px"></td>
+						<input type="text" id="fontsize" placeholder="e.g. 18px"></td>
 				</tr>
 				<tr>
 					<td>Custom Font</td>
-					<td><input type="text" id="font"></td>
-				</tr>
-				<tr>
-
+					<td><input type="text" id="font" placeholder="e.g. Helvetica"></td>
 				</tr>
 			</table>
-
+			<hr>
 	</article>
 		{{ content }}
 	</main>
