@@ -1,7 +1,75 @@
-@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Victor+Mono:ital,wght@0,100..700;1,100..700&display=swap");
+
+			@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+:root{
+    /*
+    --theme: <integer 0-5>;
+    * sets the theme color, 4 is the default. 0 white, 1-3 add yellow filter. 4 is dark, 5 changes header+link colors.
+    --contrast: <bool 0/1>;
+    * sets high contrast, 0 is the default.
+    --font: string;
+    * sets the font, 'JetBrains Mono' will be used from google fonts if not set.
+    --font-size: <float><unit>;
+    * sets the font size, 18px is the default.
+     */
+
+    --col: var(--theme, 4);
+    --cont: calc(70% + (30% * var(--contrast,0)));
+    --dark-bg: #262833;
+
+    --sepia: color-mix(in srgb,  white, yellow calc( 10% * (var(--col) + 2) * (min(1,var(--col)))));
+    --bg-color: color-mix(in srgb,  var(--sepia), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--col) - 3))))));
+    --st-color: rgb(from var(--bg-color) calc(255 - r) calc(255 - g) calc(255 - b));
+    --fg-color: color-mix(in srgb, var(--bg-color), var(--st-color) var(--cont));
+    --it-color: color-mix(in srgb, var(--bg-color), var(--fg-color) var(--cont));
+
+    --hl-color: color-mix(in srgb, #8d53a6, #ff4500 calc(0% + (100% * (max(0,calc(var(--col) - 4))))));
+    --rf-color: color-mix(in srgb, #ff7597, #4c86ce calc(0% + (100% * (max(0,calc(var(--col) - 4))))));
+    --rf-hover: color-mix(in srgb, var(--rf-color), var(--st-color) 40%);
+
+    --dimmer: rgba(0,0,0,69);
+
+
+    font-variant-ligatures: none!important;
+    --font-family: var(--font, 'JetBrains Mono');
+
+    --x-font-size: 18px;
+    @media (min-width: 2000px) {
+        --x-font-size: 22px;
+    }
+    @media (max-width: 2000px) and (min-width: 1500px) {
+        --x-font-size: 20px;
+    }
+    @media (max-width: 1500px) and (min-width: 1200px) {
+        --x-font-size: 18px;
+    }
+    @media (max-width: 1200px) and (min-width: 800px) {
+        --x-font-size: 16px;
+    }
+    @media (max-width: 800px) and (min-width: 600px) {
+        --x-font-size: 14px;
+    }
+    @media (max-width: 600px) and (min-width: 400px) {
+        --x-font-size: 12px;
+    }
+    @media (max-width: 400px) {
+        --x-font-size: 10px;
+    }
+    font-size: var(--font-size, var(--x-font-size));
+
+}
 *{
-    color: #c7c7c7;
-    font-family: 'Comfortaa', helvetica, sans-serif;
+    color: var(--fg-color);
+    font-family: var(--font-family), monospace;
+    line-height: 1em;
+    padding: 0;
+}
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--bg-color);
 }
 table.head, table.foot {
     width: inherit;
@@ -26,39 +94,22 @@ td.head-vol {
 }
 code.Nm, .Fl, .Cm, .Ic, code.In, .Fd, .Fn, .Cd {
     font-weight: bold;
-    font-family: 'Victor Mono', monospace !important;
 }
-code, pre {
-    font-family: 'Victor Mono', monospace !important;
-}
-i, em {
-    color: #7f7f7f;
+i, em, hr {
+    color: var(--it-color);
 }
 dt, b, strong {
-    color: #f0f0f0;
+    color: var(--st-color);
 }
 hr {
-    color: #363636;
     margin: 5px 0;
 }
 form{
     padding:0;
     margin:0;
 }
-.flexy {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #1f1e23;
-    color: #c7c7c7;
-}
 h1, h2, h3, h4, h5, h6 {
-    color: #8d53a6;
+    color: var(--hl-color);
     padding: 0;
     margin: 0;
 }
@@ -71,44 +122,81 @@ p, dt, table {
     padding: 5px 0;
 }
 a {
-    color: #ff7597;
-    text-decoration: underline;
+    color: var(--rf-color);
+    text-decoration: none;
+    font-weight: bold;
 }
 a:hover {
-    color: #db335d;
+    color: var(--rf-hover);
     text-decoration: underline;
 }
-input, textarea {
-    background-color: #343434;
-    border: 1px solid #c7c7c7;
-    padding: 4px;
-    border-radius: 5px;
-    margin: 2px;
+body{
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    align-items: center;
 }
-
-input[type="text"], textarea {
-    height: inherit;
-    width: 300px;
-}
-
-input[type="submit"] {
-    background-color: #343434;
-    font-weight: bold;
-    cursor: pointer;
-}
-.flexy{
-    position: fixed;
-    z-index: 5;
-    width: 100%;
-    padding: 3px 0;
+header {
+    width: calc( 100% - 1em );
+    padding: 0.5lh 0;
     margin: 0;
-    top: 0;
-    background-color: #1f1e23;
-    border-bottom: #7f7f7f 1px solid;
+    background-color: var(--bg-color);
+    border-bottom: var(--fg-color) 1px solid;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    
+    form, div{
+        display: contents;
+        * {
+            background-color: inherit;
+            border: 1px var(--fg-color);
+            font-size: 1rem;
+            margin: 0!important;
+            padding: 0.1em 1ch;
+            border-style: solid none solid solid ;
+        }
+        :first-child {
+            border-radius: 1ch 0 0 1ch;
+            border-style: solid none solid solid;
+            margin-left: auto!important;;
+        }
+        :last-child {
+            border-radius: 0 1ch 1ch 0;
+            border-style: solid;
+            margin-right: auto!important;;
+        }
+        input:not([type="submit"]){
+            font-size: 0.9em;
+            width: 100%;
+            max-width: 50ch;
+        }
+        h3, input[type="submit"], button  {
+            min-width: fit-content;
+        }
+        input[type="submit"], button {
+            font-weight: bold;
+            cursor: pointer;
+        }
+        :is(input[type="submit"], button):hover {
+            background: var(--dimmer);
+        }
+        /*h3{*/
+        /*    border: none 0;*/
+        /*    font-size: 1.2rem;*/
+        /*    padding: 0.1em 1ch;*/
+        /*}*/
+    }
+    * {
+        height: inherit;
+    }
 }
+
 .content{
-    width: calc(100% - 10px);
-    transform: translateY(40px);
+    width: calc( 100% - 1em );
     margin: 0;
+    overflow-y: scroll;
     padding: 0;
 }
+		

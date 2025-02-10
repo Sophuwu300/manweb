@@ -12,27 +12,35 @@ This Go application serves man pages over HTTP. It allows users to view, search,
 - Able to correctly interpret and display incorrectly formatted man pages, to a degree.
 - Auto updates man pages when new packages are installed or removed using standard installation methods.
 
-## Dependencies
 
-Ubuntu/Debian dependency installation: `sudo apt-get install mandoc -y`
+### Contents
+- [Installation Using Apt](#installation-using-apt)
+- [Compiling From Source](#compiling-from-source)
+- [Using As Systemd Service](#using-as-systemd-service)
+- [Accessing the Web Interface](#accessing-the-web-interface)
+- [Example Usage](#example-usage)
 
-Golang installation instructions at [go.dev](https://go.dev/doc/install).
+# Installation Using Apt
 
-lazy script to install go 1.23.1 updated 7-SEP-2024
+Simply run the following commands to add my repository and install the package. This will install the latest release and automatically update the server when new versions are released.
+This will also make the server available as a systemd service, and start it automatically. You may still want to configure a user for the service as some manuals may be in user home directories.
+This isn't common on most systems, so the default configuration should work out of the box in most cases.
 
 ```bash
-#!/bin/bash
-# delete incompatible versions
-[ -d /usr/local/go ] && sudo rm -rf '/usr/local/go' ;
-# downlaod compatible version
-which wget || sudo apt-get install wget -y && wget https://go.dev/dl/go1.23.1.linux-amd64.tar.gz ;
-# install into system  
-[ -f go1.23.1.linux-amd64.tar.gz ] && sudo tar -C /usr/local -xzf go1.23.1.linux-amd64.tar.gz ;
-# add to bin 
-[ -f /usr/local/go/bin/go ] && sudo ln -s /usr/local/go/bin/go /bin/go ;
-# hope it works 
-go version ;
+curl https://cdn.sophuwu.site/deb/addrepo.sh | sudo sh
+sudo apt update
+sudo apt install manhttpd
 ```
+
+# Compiling From Source
+
+## Dependencies
+If you are not installing from apt, you will need to install the mandoc package.
+* Ubuntu/Debian dependency installation: `sudo apt-get install mandoc -y`
+
+If you wish to compile from source, you will need Go installed.\
+* Golang installation instructions at [go.dev](https://go.dev/doc/install).
+
 
 ## Compiling The Binary
 
@@ -47,7 +55,7 @@ go build -ldflags="-s -w" -trimpath -o build/manhttpd
 sudo install ./build/manhttpd /usr/local/bin/manhttpd
 ```
 
-## Using As Systemd Service:
+# Using As Systemd Service:
 
 The provided service file should work on most systems, but you may need to edit it to fit your needs.\
 It will open a http server on port 8082 available through all network interfaces.\
@@ -94,7 +102,7 @@ sudo systemctl reload-or-restart manhttpd.service
 sudo systemctl status manhttpd.service
 ```
 
-## Accessing the Web Interface
+# Accessing the Web Interface
 
 Open your web browser and navigate to `http://localhost:8082` if you are running the server locally or the remote server's IP address or hostname.\
 To search with regex, you can use the search bar at the top of the page with `-r` at the beginning of the search term.\
@@ -124,6 +132,7 @@ Glob patterns are also supported in the search bar if regex not enabled.\
 ## Help and Support
 
 I don't know how this git pull thing works. I will try if I see any issues. I've never collaborated on code before. If you have any suggestions, or questions about anything I've written, I would be happy to hear your thoughts.\
-contant info: [skisiel.com](https://skisiel.com) or [sophuwu.site](https://sophuwu.site)
-
+contant info: 
+* discord: [@sophuwu](https://discord.com/users/sophuwu)
+* email: [sophie@sophuwu.site](mailto:sophie@sophuwu.site)
 

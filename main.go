@@ -16,7 +16,10 @@ import (
 var index string
 
 //go:embed dark_theme.css
-var css []byte
+var css string
+
+//go:embed scripts.js
+var scripts string
 
 //go:embed favicon.ico
 var favicon []byte
@@ -30,6 +33,9 @@ var CFG struct {
 
 func GetCFG() {
 	CFG.Hostname = os.Getenv("HOSTNAME")
+	if CFG.Hostname == "" {
+		CFG.Hostname, _ = os.Hostname()
+	}
 	index = strings.ReplaceAll(index, "{{ hostname }}", CFG.Hostname)
 	b, e := exec.Command("which", "mandoc").Output()
 	if e != nil || len(b) == 0 {
@@ -51,16 +57,21 @@ func GetCFG() {
 	}
 }
 
-func CssHandle(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/css; charset=utf-8")
-	w.Header().Set("Content-Length", fmt.Sprint(len(css)))
-	w.WriteHeader(http.StatusOK)
-	w.Write(css)
+// func CssHandle(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "text/css; charset=utf-8")
+// 	w.Header().Set("Content-Length", fmt.Sprint(len(css)))
+// 	w.WriteHeader(http.StatusOK)
+// 	w.Write(css)
+// }
+
+func init() {
+	index = strings.ReplaceAll(index, "{{ jsContent }}", scripts)
+	index = strings.ReplaceAll(index, "{{ cssContent }}", css)
 }
 
 func main() {
 	GetCFG()
-	http.HandleFunc("/style.css", CssHandle)
+	// http.HandleFunc("/style.css", CssHandle)
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/x-icon")
 		w.Header().Set("Content-Length", fmt.Sprint(len(favicon)))
@@ -167,10 +178,10 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Base(r.URL.Path)
 	path = strings.TrimSuffix(path, "/")
-	if path == "style.css" {
-		CssHandle(w, r)
-		return
-	}
+	// if path == "style.css" {
+	// 	CssHandle(w, r)
+	// 	return
+	// }
 
 	if r.Method == "POST" {
 		searchHandler(w, r)

@@ -3,16 +3,32 @@
 	<head>
 		<meta charset="utf-8">
 		<title>{{ title }}@{{ hostname }}</title>
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<!--link rel="stylesheet" type="text/css" href="style.css"-->
+		<style id="styleCss">
+			{{ cssContent }}
+		</style>
+		<script>
+			{{ jsContent }}
+		</script>
 	</head>
 <body>
-	<div class="flexy">
-		<h3 style="margin: 2px;">Man Pages:</h3>
-		<FORM method="post">
-			<INPUT TYPE="text" name="q" autocomplete="off">
-			<INPUT TYPE="submit" VALUE="Search">
-		</FORM>
-	</div>
+
+	<header>
+		<div>
+			<h3>ManWeb</h3>
+			<h3>@{{ hostname }}</h3>
+		</div>
+		<form method="post">
+			<h3>Find:</h3>
+			<input type="text" name="q" autocomplete="off">
+			<input type="submit" value="Search">
+		</form>
+		<div>
+			<button id="helpButt">Help</button>
+			<button id="SetButt">Settings</button>
+		</div>
+	</header>
+
 	<div class="content">
 		{{ content }}
 	</div>
