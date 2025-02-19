@@ -1,86 +1,141 @@
-    /*
-    --theme: <integer 0-5>;
-    * sets the theme color, 4 is the default. 0 white, 1-3 add yellow filter. 4 is dark, 5 changes header+link colors.
-    --contrast: <bool 0/1>;
-    * sets high contrast, 0 is the default.
-    --font: string;
-    * sets the font, 'JetBrains Mono' will be used from google fonts if not set.
-    --font-size: <float><unit>;
-    * sets the font size, 18px is the default.
-     */
+const style = document.getElementById("styleCss");
+const styleCss = style.innerHTML;
 
-const CSSRx = /^(((\d+(\.\d+)?)(%|p[xtc]|r?em|ex|ch|v(min|max|w|h)|([cm]m)|in))|(((?<x>x{1,3}-)?(small|larg)e?((?<=\k<x>)r)?)|medium|normal))$/;
+const ValidKeys = ["theme", "contrast", "scale"];
+const Valid_theme = ["dark", "warm", "light"];
+const Valid_contrast = ["low", "medium", "high"];
+const Valid_scale = ["-", "0", "+"];
 
 
-let funcmap = {
-    "--theme": function (value) {
-        let v = parseInt(value);
-        return (v < 0 || v > 5)
-    },
-    "--contrast": function (value) {
-        let v = parseInt(value);
-        return (v < 0 || v > 1)
-    },
-    "--font": function (value) {
-        return (value.length < 1)
-    },
-    "--font-size": function (value) {
-        return !CSSRx.test(value)
+function SetStyle() {
+    let tmp = ":root {\n";
+    ValidKeys.forEach(key => {
+        let value = localStorage.getItem(key);
+        if (value) tmp += "--" + key + ": " + value + ";\n";
+    });
+    tmp += "}\n\n";
+    style.innerHTML = tmp + styleCss;
+    ValidKeys.forEach(key => function (key) {
+        if (butts[key]["arr"].length < 3) return;
+        let value = localStorage.getItem(key);
+        if (!value) {
+            if (key == "theme") value = "dark";
+            else if (key == "contrast") value = 1;
+            else return;
+        }
+        if (value >= 0 && value <= 2) value = Valid_contrast[value];
+        else if (value.startsWith("var(--")) value = value.substring("var(--".length, value.length - 1);
+        butts[key]["arr"].forEach(b => b.classList.remove("butt-set"));
+        butts[key]["map"][value].classList.add("butt-set");
+    }(key));
+}
+function SaveValue(key, value) {
+    if (!ValidKeys.includes(key)) return;
+    localStorage.setItem(key, value);
+    SetStyle();
+}
+
+
+function SetTheme(theme=null) {
+    if (theme==null) {
+        let value = localStorage.getItem("theme");
+        if (!value) value = "var(--dark)";
+        value = value.replace("var(--", "").replace(")", "");
+        HlButt("theme", value);
     }
+    if (!Valid_theme.includes(theme)) return;
+    theme = "var(--" + theme + ")";
+    SaveValue("theme", theme);
+}
+
+function SetContrast(contrast=null) {
+    if (contrast==null) {
+
+        if (!value) value = "1";
+        value = Valid_contrast[value];
+        HlButt("contrast", value);
+    }
+    if (!Valid_contrast.includes(contrast)) return;
+    SaveValue("contrast", Valid_contrast.indexOf(contrast));
+}
+
+function SetScale(scale) {
+    if (!Valid_scale.includes(scale)) return;
+    let value = localStorage.getItem("scale");
+    if (!value) value = 1;
+    let diff = (0.1 * (Valid_scale.indexOf(scale) - 1));
+    if (diff != 0) {
+        value = parseFloat(value) + diff;
+        if (value < 0.1) value = 0.1;
+        if (value > 2) value = 2;
+        value = value.toFixed(1);
+        SaveValue("scale", value);
+    }
+    document.getElementById("scaleVal").innerHTML = (value*100).toFixed(0) + "%"
+}
+
+function ResetStyle() {
+    ValidKeys.forEach(key => {
+        localStorage.removeItem(key);
+    });
+    SetStyle();
+    SetScale("0");
+}
+function H(elem) {
+    return {l: elem.innerHTML.toLowerCase(), n: elem.innerHTML};
+}
+
+function Menu(wants="search"){
+    let mainClick = [`document.getElementById("main-content").`,`EventListener("click", function () {Menu()})`];
+
+    let n = document.getElementById(wants);
+    if (!n || !n.classList.contains("menu")) return;
+
+    eval(mainClick.join(function (b){
+        if (b) return "remove";
+        return "add";
+    }(wants == "search")));
+
+    let l = function (elem) {return {
+        e: function (e){e==elem},
+        h: elem.classList.contains("hidden"),
+        t: function () {elem.classList.toggle("hidden")},
+    };};
+    document.querySelectorAll(".menu").forEach(ee => function (e){
+        if (e.e(n) || e.h) return;
+        e.t();
+    }(l(ee)));
+    n = l(n);
+    if (n.h) n.t();
+}
+
+function Butt() {
+    let butts = new Object();
+    ValidKeys.forEach(key => function (key) {
+        butts[key]=new Object();
+        eval("Valid_"+key).forEach(v => function (v) {
+            butts[key][v]=null;
+        }(v));
+    }(key));
+    return butts;
 };
 
+var butts = Object();
 
-function SaveValue(key, value) {
-    let fn = funcmap[key]
-    if (typeof(fn) != "function"||fn(value)) {
-        return false;
-    }
-    localStorage.setItem(key, value);
-    return true;
-}
-
-function DeleteValue(key) {
-    localStorage.removeItem(key);
-}
-
-// var style = document.createElement('style');
-// style.innerText += document.styleSheets[0].cssRules[0].cssText;
-// const styleCss = style.innerText;
-// style.id = "styleCss";
-// document.head.appendChild(style);
-
-const style = document.getElementById("styleCss");
-const styleCss = style.innerText;
-
-function setStyle() {
-    let tmp = ":root{\n";
-    let ar = ["--theme", "--contrast", "--font", "--font-size"];
-    for (let key of ar) {
-        let value = localStorage.getItem(key);
-        if (value) tmp += `${key}:${value};` + "\n";
-    }
-    tmp += "}";
-    style.innerText = tmp + styleCss;
-}
-
-document.addEventListener("DOMContentLoaded", setStyle);
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("SetButt").addEventListener("click", function () {
-        let ar = ["--theme", "--contrast", "--font", "--font-size"];
-        for (let key of ar) {
-            let value = localStorage.getItem(key);
-            if (value) document.getElementById(key.replaceAll("-", "")).value = value;
-        }
-        document.querySelector("article.settings").classList.toggle("hidden");
-    });
-    document.getElementById("contrast").addEventListener("mousedown", function () {
-            let elem = document.getElementById("contrast");
-            if (elem.value == 1) elem.value = 0;
-            else elem.value = 1;
-            elem.classList.toggle("togii");
-            if (SaveValue("--contrast", elem.value))setStyle();
-    });
-    document.getElementById("theme").addEventListener("input", function () {
-        if (SaveValue("--theme", document.getElementById("theme").value))setStyle();
-    });
+    document.querySelectorAll("#settings > div > h3").forEach(elemH => function (elemH,n) {
+        if (!ValidKeys.includes(n.l)) return;
+        butts[n.l]= new Object({});
+        butts[n.l]["h"] = elemH;
+        butts[n.l]["div"] = elemH.parentElement;
+        butts[n.l]["arr"] = [];
+        butts[n.l]["map"] = new Object({});
+        elemH.parentElement.querySelectorAll("button").forEach(butt => function (butt, fun, v) {
+            let i = butts[n.l]["arr"].push(butt);
+            butts[n.l]["map"][v] = butts[n.l]["arr"][i-1];
+            butt.addEventListener("click",  function () {fun(v)});
+        }(butt,eval("Set" + n.n), H(butt).l));
+    }(elemH,H(elemH)));
+    SetStyle();
+    SetScale("0");
 });

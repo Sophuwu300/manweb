@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
 		<meta charset="utf-8">
 		<title>{{ title }}@{{ hostname }}</title>
 		<style id="styleCss">
@@ -11,45 +14,55 @@
 		</script>
 	</head>
 <body>
-
-	<header>
+	<header class="menu" id="search">
 		<div>
-			<h3>ManWeb</h3>
-			<h3>@{{ hostname }}</h3>
+			<h3>ManWeb @{{ hostname }}</h3>
 		</div>
-		<form method="post">
-			<h3>Find:</h3>
-			<input type="text" name="q" autocomplete="off" value="{{ query }}">
-			<input type="submit" value="Search">
+		<form class="rounded" method="post">
+			<input type="text" class="txt" name="q" autocomplete="off" value="{{ query }}">
+			<input type="submit" class="submit" value="Search">
 		</form>
-		<div>
+		<div class="rounded">
 			<button id="helpButt">Help</button>
-			<button id="SetButt">Settings</button>
+			<button onclick="Menu(H(this).l)">Settings</button>
 		</div>
 	</header>
-
-	<main>
-		<article class="settings hidden">
-			<table>
-				<tr>
-					<td>Theme</td>
-					<td><input type="range" min="0" max="5" value="4" id="theme" class="slider"></td>
-				</tr>
-				<tr class="yeet">
-					<td>
-						<label>High Contrast</label>
-						<input readonly type="range" min="0" max="1" value="0" id="contrast" class="slider"></td>
-					<td>
-						<label>Font Size</label>
-						<input type="text" id="fontsize" placeholder="e.g. 18px"></td>
-				</tr>
-				<tr>
-					<td>Custom Font</td>
-					<td><input type="text" id="font" placeholder="e.g. Helvetica"></td>
-				</tr>
-			</table>
-			<hr>
-	</article>
+	<header class="settings menu hidden" id="settings">
+		<div>
+			<h3>Settings</h3>
+		</div>
+		<div>
+			<h3>Theme</h3>
+			<div class="rounded">
+				<button>Dark</button>
+				<button>Light</button>
+				<button>Warm</button>
+			</div>
+		</div>
+		<div>
+			<h3>Contrast</h3>
+			<div class="rounded">
+				<button>Low</button>
+				<button>Medium</button>
+				<button>High</button>
+			</div>
+		</div>
+		<div>
+			<h3>Scale</h3>
+			<div class="rounded">
+				<button>-</button>
+				<label id="scaleVal">100%</label>
+				<button>+</button>
+			</div>
+		</div>
+		<div>
+			<div class="rounded">
+				<button onclick="ResetStyle()">Reset</button>
+				<button onclick="Menu()">Close</button>
+			</div>
+		</div>
+	</header>
+	<main id="main-content">
 		{{ content }}
 	</main>
 	</body>

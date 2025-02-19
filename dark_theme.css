@@ -1,38 +1,23 @@
-
-
-
-
-
-			@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-
 :root{
-    /*
-    --theme: <integer 0-5>;
-    * sets the theme color, 4 is the default. 0 white, 1-3 add yellow filter. 4 is dark, 5 changes header+link colors.
-    --contrast: <bool 0/1>;
-    * sets high contrast, 0 is the default.
-    --font: string;
-    * sets the font, 'JetBrains Mono' will be used from google fonts if not set.
-    --font-size: <float><unit>;
-    * sets the font size, 18px is the default.
-     */
 
-    --col: var(--theme, 4);
-    --cont: calc(70% + (30% * var(--contrast,0)));
-    --dark-bg: #262833;
+    --dark: #262833;
+    --light: #ffffff;
+    --warm: #FFFF99;
 
-    --sepia: color-mix(in srgb,  white, yellow calc( 10% * (var(--col) + 2) * (min(1,var(--col)))));
-    --bg-color: color-mix(in srgb,  var(--sepia), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--col) - 3))))));
+    --cont: calc(20% * var(--contrast,1));
+
+    --bg-color: var(--theme, var(--dark));
+
     --st-color: rgb(from var(--bg-color) calc(255 - r) calc(255 - g) calc(255 - b));
-    --fg-color: color-mix(in srgb, var(--bg-color), var(--st-color) var(--cont));
-    --it-color: color-mix(in srgb, var(--bg-color), var(--fg-color) var(--cont));
+    --fg-color: color-mix(in srgb, var(--st-color), var(--bg-color) var(--cont));
+    --it-color: color-mix(in srgb, var(--fg-color), var(--bg-color) var(--cont));
 
-    --hl-color: color-mix(in srgb, #8d53a6, #ff4500 calc(0% + (100% * (max(0,calc(var(--col) - 4))))));
-    --rf-color: color-mix(in srgb, #ff7597, #4c86ce calc(0% + (100% * (max(0,calc(var(--col) - 4))))));
-    --rf-hover: color-mix(in srgb, var(--rf-color), var(--st-color) 40%);
+    --hl-color: #ff7597;
+    --rf-color: #5da5ff;
+    --rf-hover: #40d8ff;
 
-    --dimmer: rgba(0,0,0,69);
-    --lessdimmer: rgba(0,0,0,20%);
+    --dimmer: color-mix(in srgb, var(--fg-color), var(--bg-color) 70%);
+    --dim: color-mix(in srgb, var(--fg-color), var(--bg-color) 80%);
 
     font-variant-ligatures: none!important;
     --font-family: var(--font, 'JetBrains Mono');
@@ -59,15 +44,13 @@
     @media (max-width: 400px) {
         --x-font-size: 10px;
     }
-    font-size: var(--font-size, var(--x-font-size));
+    font-size: calc( var(--scale,1) * var(--x-font-size) );
 
 }
 *{
     color: var(--fg-color);
     font-family: var(--font-family), monospace;
     line-height: 1em;
-    padding: 0;
-    transition: all 150ms ease-in-out;
 }
 body, html {
     margin: 0;
@@ -75,77 +58,6 @@ body, html {
     height: 100%;
     width: 100%;
     background-color: var(--bg-color);
-}
-article.hidden {
-    display: none!important;
-    height: 0!important;
-}
-togii {
-    background-color: color-mix(in srgb, var(--hl-color), var(--bg-color) 50%);
-}
-.settings {
-    display: contents;
-    input {
-        &[type=range] {
-            margin: 0;
-            &[id="theme"] {
-                width: 100%;
-                --grad0: 0;
-                --grad1: 1;
-                --grad2: 2;
-                --grad3: 3;
-                --grad4: 4;
-                --grad5: 5;
-                --graddy: 18%;
-                background-image: linear-gradient(90deg, color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad0) + 2) * (min(1,var(--grad0))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad0) - 3)))))) calc(var(--grad0) * var(--graddy)),
-                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad1) + 2) * (min(1,var(--grad1))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad1) - 3)))))) calc(var(--grad1) * var(--graddy)),
-                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad2) + 2) * (min(1,var(--grad2))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad2) - 3)))))) calc(var(--grad2) * var(--graddy)),
-                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad3) + 2) * (min(1,var(--grad3))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad3) - 3)))))) calc(var(--grad3) * var(--graddy)),
-                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad4) + 2) * (min(1,var(--grad4))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad4) - 3)))))) calc(var(--grad4) * var(--graddy)),
-                color-mix(in srgb,  color-mix(in srgb,  white, yellow calc( 10% * (var(--grad5) + 2) * (min(1,var(--grad5))))), var(--dark-bg) calc(0% + (100% * (max(0,calc(var(--grad5) - 3)))))) calc(var(--grad5) * var(--graddy)))!important;
-          }
-            &[id="contrast"] {
-                width: 2rem;
-                background: var(--lessdimmer);
-            }
-
-        }
-        height:1rem;
-        &[type="text"]{
-            font-size: 0.7rem;
-            padding: 0.2em 1ch;
-            margin: -0.2em -1ch;
-        }
-        border: 1px solid var(--fg-color);
-        border-radius: 0.5rem;
-        border-color: var(--fg-color);
-        background: var(--lessdimmer);
-    }
-
-    .slider::-webkit-slider-thumb, .slider::-moz-range-thumb {
-        width: calc(100% / 12);
-        min-width: 1rem;
-        background: var(--hl-color);
-        height: calc(1rem - 0.1em);
-    }
-    height: 100%!important;
-    tr > th {
-        width: 100%;
-        margin: 0;
-    }
-    td {
-        padding: 0.5ch;
-        margin: auto;
-    }
-    label {
-        display: contents;
-    }
-    input#font {
-       width: 100%;
-    }
-    table {
-        margin: 0 auto 0 auto;
-    }
 }
 table.head, table.foot {
     width: inherit;
@@ -171,7 +83,7 @@ td.head-vol {
 code.Nm, .Fl, .Cm, .Ic, code.In, .Fd, .Fn, .Cd {
     font-weight: bold;
 }
-i, em, hr {
+i, em {
     color: var(--it-color);
 }
 dt, b, strong {
@@ -179,6 +91,7 @@ dt, b, strong {
 }
 hr {
     margin: 5px 0;
+    color: var(--fg-color);
 }
 form{
     padding:0;
@@ -213,63 +126,75 @@ body{
     align-items: center;
 }
 header {
-    width: calc( 100% - 1em );
+    width: calc(100% - 1em);
     padding: 0.5lh 0;
     margin: 0;
     background-color: var(--bg-color);
     border-bottom: var(--fg-color) 1px solid;
     display: flex;
     flex-direction: row;
-    align-content: center;
-    justify-content: center;
-
-    form, div{
-        display: contents;
-        * {
-            background-color: inherit;
-            border: 1px var(--fg-color);
-            font-size: 1rem;
-            margin: 0!important;
-            padding: 0.1em 1ch;
-            border-style: solid none solid solid ;
-        }
-        :first-child {
-            border-radius: 1ch 0 0 1ch;
-            border-style: solid none solid solid;
-            margin-left: auto!important;;
-        }
-        :last-child {
-            border-radius: 0 1ch 1ch 0;
-            border-style: solid;
-            margin-right: auto!important;;
-        }
-        input:not([type="submit"]){
-            font-size: 0.9em;
-            width: 100%;
-            max-width: 50ch;
-        }
-        h3, input[type="submit"], button  {
-            min-width: fit-content;
-        }
-        input[type="submit"], button {
-            font-weight: bold;
-            cursor: pointer;
-        }
-        :is(input[type="submit"], button):hover {
-            background: var(--dimmer);
-        }
-        /*h3{*/
-        /*    border: none 0;*/
-        /*    font-size: 1.2rem;*/
-        /*    padding: 0.1em 1ch;*/
-        /*}*/
-    }
-    * {
-        height: inherit;
-    }
+    justify-content: space-between;
+}
+header > form {
+    display: contents;
+}
+header > div {
+    display: inherit;
+}
+header h3 {
+    margin: auto 0 auto 0;
+    font-size: 1.15rem;
+}
+header.settings :not(:first-child) h3 {
+    font-size: 0.9rem;
+    margin-right: 1ch;
+    color: var(--st-color);
+}
+.rounded > * {
+    background-color: inherit;
+    border: 1px var(--fg-color);
+    font-size: 1rem;
+    margin: 0 !important;
+    padding: 0.1em 1ch;
+    border-style: solid none solid solid;
+}
+.rounded > :first-child {
+    border-radius: 1ch 0 0 1ch;
+    border-style: solid none solid solid;
+    margin-left: auto !important;
 }
 
+.rounded > :last-child {
+    border-radius: 0 1ch 1ch 0;
+    border-style: solid;
+    margin-right: auto !important;
+}
 
+header > * > * {
+    min-width: fit-content;
+}
+
+.txt {
+    font-size: 0.9em;
+    width: 100%;
+    max-width: 50ch;
+}
+
+.submit, button {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover, .submit:hover {
+    background: var(--dim);
+}
+buttton:focus, .submit:focus, .txt:focus {
+    background: var(--dimmer);
+}
+
+header * {
+    height: inherit;
+}
 main{
     width: calc( 100% - 1em );
     height: 100%;
@@ -277,6 +202,18 @@ main{
     overflow: auto;
     padding: 0;
 }
+.hidden {
+    display: none!important;
+    height: 0!important;
+}
+.settings h4 {
 
-
+}
+.settings div.rounded {
+    display: contents;
+}
+.butt-set {
+    background-color: var(--it-color);
+    color: var(--bg-color);
+}
 
