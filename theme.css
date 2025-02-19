@@ -27,19 +27,19 @@
         --x-font-size: 22px;
     }
     @media (max-width: 2000px) and (min-width: 1500px) {
-        --x-font-size: 20px;
-    }
-    @media (max-width: 1500px) and (min-width: 1200px) {
         --x-font-size: 18px;
     }
-    @media (max-width: 1200px) and (min-width: 800px) {
+    @media (max-width: 1500px) and (min-width: 1200px) {
         --x-font-size: 16px;
     }
-    @media (max-width: 800px) and (min-width: 600px) {
+    @media (max-width: 1200px) and (min-width: 800px) {
         --x-font-size: 14px;
     }
+    @media (max-width: 800px) and (min-width: 600px) {
+        --x-font-size: 13px;
+    }
     @media (max-width: 600px) and (min-width: 400px) {
-        --x-font-size: 12px;
+        --x-font-size: 11px;
     }
     @media (max-width: 400px) {
         --x-font-size: 10px;
@@ -206,8 +206,8 @@ main{
     display: none!important;
     height: 0!important;
 }
-.settings h4 {
-
+.settings {
+    flex-wrap: wrap;
 }
 .settings div.rounded {
     display: contents;

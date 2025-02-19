@@ -139,3 +139,23 @@ document.addEventListener("DOMContentLoaded", function () {
     SetStyle();
     SetScale("0");
 });
+
+function ChangeRawQuery(s="") {
+	let u = document.URL;
+	let i = u.indexOf("?");
+	if (s.length > 0 && !s.startsWith("?")) {
+		s = "?" + s;
+	}
+	if (i == -1) {
+		return u + s;
+	}
+	return u.substring(0, i) + s;
+}
+function SetRawQuery(s="") {
+	let u = ChangeRawQuery(s);
+	window.history.pushState({"html":document.toString(),"pageTitle":document.title},"", u);
+}
+function GoToRawQuery(s) {
+	let u = ChangeRawQuery(s);
+	window.location.href = u;
+}
