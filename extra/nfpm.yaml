@@ -17,14 +17,14 @@ suggests:
 conflicts:
 maintainer: "sophuwu <sophie@skisiel.com>"
 description: |
-manhttpd is a frontend for the linux man pages.
-Offering a functional, minimalistic interface for viewing and finding pages.
-- Search directly by page name
-- Search by keyword/wildcard
-- Search by section number
-- Full regex name and description search
-It is useful for serving manpages over a network, or for browsing them
-in a web browser.
+  manhttpd is a frontend for the linux man pages.
+  Offering a functional, minimalistic interface for viewing and finding pages.
+  - Search directly by page name
+  - Search by keyword/wildcard
+  - Search by section number
+  - Full regex name and description search
+  It is useful for serving manpages over a network, or for browsing them
+  in a web browser.
 vendor: "sophuwu.site"
 homepage: "https://sophuwu.site/manhttpd"
 license: "MIT"
