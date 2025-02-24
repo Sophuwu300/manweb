@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
 		<meta charset="utf-8">
 		<title>{{ title }}@{{ hostname }}</title>
-		<style id="styleCss">
-			{{ cssContent }}
-		</style>
-		<script>
-			{{ jsContent }}
-		</script>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="style.css" type="text/css">
+		<script src="script.js"></script>
+		<link rel="icon" href="icons.ico" type="image/x-icon">
+		<style id="styleCss"></style>
 	</head>
 <body>
 	<header class="menu" id="search">
@@ -19,13 +15,16 @@
 			<h3>ManWeb @{{ hostname }}</h3>
 		</div>
 		<form class="rounded" method="post">
-			<input type="text" class="txt" name="q" autocomplete="off" value="{{ query }}">
+			<input type="text" class="txt" name="q" autocomplete="off" >
 			<input type="submit" class="submit" value="Search">
 		</form>
 		<div class="rounded">
-			<button id="helpButt">Help</button>
+			<button onclick="GoToRawQuery('manweb-help.html')">Help</button>
 			<button onclick="Menu(H(this).l)">Settings</button>
 		</div>
+		<script>
+			document.querySelector('input[name="q"]').value = `{{ query }}`;
+		</script>
 	</header>
 	<header class="settings menu hidden" id="settings">
 		<div>

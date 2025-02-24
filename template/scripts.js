@@ -1,5 +1,4 @@
-const style = document.getElementById("styleCss");
-const styleCss = style.innerHTML;
+var style = null;
 
 const ValidKeys = ["theme", "contrast", "scale"];
 const Valid_theme = ["dark", "warm", "light"];
@@ -14,7 +13,7 @@ function SetStyle() {
         if (value) tmp += "--" + key + ": " + value + ";\n";
     });
     tmp += "}\n\n";
-    style.innerHTML = tmp + styleCss;
+    style.innerHTML = tmp;
     ValidKeys.forEach(key => function (key) {
         if (butts[key]["arr"].length < 3) return;
         let value = localStorage.getItem(key);
@@ -122,40 +121,45 @@ function Butt() {
 
 var butts = Object();
 
-document.addEventListener("DOMContentLoaded", function () {
+function SetButts() {
     document.querySelectorAll("#settings > div > h3").forEach(elemH => function (elemH,n) {
-        if (!ValidKeys.includes(n.l)) return;
-        butts[n.l]= new Object({});
-        butts[n.l]["h"] = elemH;
-        butts[n.l]["div"] = elemH.parentElement;
-        butts[n.l]["arr"] = [];
-        butts[n.l]["map"] = new Object({});
-        elemH.parentElement.querySelectorAll("button").forEach(butt => function (butt, fun, v) {
-            let i = butts[n.l]["arr"].push(butt);
-            butts[n.l]["map"][v] = butts[n.l]["arr"][i-1];
-            butt.addEventListener("click",  function () {fun(v)});
-        }(butt,eval("Set" + n.n), H(butt).l));
+    if (!ValidKeys.includes(n.l)) return;
+    butts[n.l]= new Object({});
+    butts[n.l]["h"] = elemH;
+    butts[n.l]["div"] = elemH.parentElement;
+    butts[n.l]["arr"] = [];
+    butts[n.l]["map"] = new Object({});
+    elemH.parentElement.querySelectorAll("button").forEach(butt => function (butt, fun, v) {
+        let i = butts[n.l]["arr"].push(butt);
+        butts[n.l]["map"][v] = butts[n.l]["arr"][i-1];
+        butt.addEventListener("click",  function () {fun(v)});
+    }(butt,eval("Set" + n.n), H(butt).l));
     }(elemH,H(elemH)));
+}
+
+function ChangeRawQuery(s="") {
+
+    let u = document.URL;
+    let i = u.indexOf("?");
+    if (s.length > 0 && !s.startsWith("?")) {
+        s = "?" + s;
+    }
+    if (i == -1) {
+        return u + s;
+    }
+    return u.substring(0, i) + s;
+}
+function SetRawQuery(s="") {
+    let u = ChangeRawQuery(s);
+    window.history.pushState({"html":document.toString(),"pageTitle":document.title},"", u);
+}
+function GoToRawQuery(s) {
+    let u = ChangeRawQuery(s);
+    window.location.href = u;
+}
+document.addEventListener("DOMContentLoaded", function () {
+    style = document.getElementById("styleCss");
+    SetButts();
     SetStyle();
     SetScale("0");
 });
-
-function ChangeRawQuery(s="") {
-	let u = document.URL;
-	let i = u.indexOf("?");
-	if (s.length > 0 && !s.startsWith("?")) {
-		s = "?" + s;
-	}
-	if (i == -1) {
-		return u + s;
-	}
-	return u.substring(0, i) + s;
-}
-function SetRawQuery(s="") {
-	let u = ChangeRawQuery(s);
-	window.history.pushState({"html":document.toString(),"pageTitle":document.title},"", u);
-}
-function GoToRawQuery(s) {
-	let u = ChangeRawQuery(s);
-	window.location.href = u;
-}

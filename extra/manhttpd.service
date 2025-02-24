@@ -1,10 +1,10 @@
 [Unit]
-Description=Server that serves a html man page interface over http
+Description=front end service for parsing man into html over http
 After=network.target
 
 [Service]
 # Path to the command binary
-ExecStart=/usr/local/bin/manweb
+ExecStart=/usr/bin/manhttpd
 # Recommended to use /tmp as the working directory since data is not saved
 WorkingDirectory=/tmp
 Type=simple

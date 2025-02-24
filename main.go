@@ -11,22 +11,28 @@ import (
 	"strings"
 )
 
-//go:embed index.html
+//go:embed template/index.html
 var index string
 
-//go:embed theme.css
-var css string
+//go:embed template/help.html
+var help string
 
-//go:embed scripts.js
-var scripts string
+//go:embed template/theme.css
+var css []byte
 
-//go:embed favicon.ico
+//go:embed template/scripts.js
+var scripts []byte
+
+//go:embed template/favicon.ico
 var favicon []byte
 
 var CFG struct {
 	Hostname string
 	Port     string
 	Mandoc   string
+	DbCmd    string
+	ManCmd   string
+	Server   http.Server
 	Addr     string
 }
 
@@ -46,8 +52,9 @@ func GetCFG() {
 		CFG.Hostname = s
 	} else if b, e = os.ReadFile("/etc/hostname"); e == nil {
 		CFG.Hostname = strings.TrimSpace(string(b))
-	} else {
-
+	}
+	if CFG.Hostname == "" {
+		CFG.Hostname = "Unresolved"
 	}
 	index = strings.ReplaceAll(index, "{{ hostname }}", CFG.Hostname)
 
@@ -61,6 +68,24 @@ func GetCFG() {
 	} else {
 		CFG.Mandoc = strings.TrimSpace(string(b))
 	}
+	f := func(s string) string {
+		if b, e = exec.Command("which", s).Output(); e != nil || len(b) == 0 {
+			return ""
+		}
+		return strings.TrimSpace(string(b))
+	}
+
+	if s = f("man"); s == "" {
+		Fatal("dependency `man` not found. `man` and its libraries are required for manhttpd to function.")
+	} else {
+		CFG.ManCmd = s
+	}
+
+	if s = f("apropos"); s == "" {
+		Fatal("dependency `apropos` not found. `apropos` is required for search functionality.")
+	} else {
+		CFG.DbCmd = s
+	}
 
 	CFG.Port = os.Getenv("ListenPort")
 	if CFG.Port == "" {
@@ -72,30 +97,45 @@ func GetCFG() {
 	}
 }
 
-func init() {
-	index = strings.ReplaceAll(index, "{{ jsContent }}", scripts)
-	index = strings.ReplaceAll(index, "{{ cssContent }}", css)
-}
-
 func main() {
 	GetCFG()
-	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "image/x-icon")
-		w.Header().Set("Content-Length", fmt.Sprint(len(favicon)))
-		w.WriteHeader(http.StatusOK)
-		w.Write(favicon)
-	})
 	server := http.Server{
 		Addr:    CFG.Addr + ":" + CFG.Port,
-		Handler: http.HandlerFunc(indexHandler),
+		Handler: http.HandlerFunc(MuxHandler),
 	}
 	_ = server.ListenAndServe()
+}
+
+func WriteFile(w http.ResponseWriter, file []byte, contentType string) {
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Length", fmt.Sprint(len(file)))
+	w.WriteHeader(http.StatusOK)
+	w.Write(file)
+}
+
+func MuxHandler(w http.ResponseWriter, r *http.Request) {
+	p := r.URL.Path
+	l := len(p)
+	if l >= 9 {
+		p = p[l-9:]
+	}
+	switch p {
+	case "style.css":
+		WriteFile(w, css, "text/css")
+	case "script.js":
+		WriteFile(w, scripts, "text/javascript")
+	case "icons.ico":
+		WriteFile(w, favicon, "image/x-icon")
+	default:
+		IndexHandler(w, r)
+	}
+	r.Body.Close()
 }
 
 func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q string) {
 	out := strings.ReplaceAll(index, "{{ host }}", r.Host)
 	out = strings.ReplaceAll(out, "{{ title }}", title)
-	out = strings.ReplaceAll(out, "{{ query }}", q)
+	out = strings.ReplaceAll(out, "{{ query }}", strings.ReplaceAll(q, "`", "\\`"))
 	out = strings.ReplaceAll(out, "{{ content }}", html)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -165,16 +205,23 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "?"+q, http.StatusFound)
 		return
 	}
+
 	var args = RxWords("-lw "+q, -1)
+
 	for i := range args {
 		args[i] = strings.TrimSpace(args[i])
 		args[i] = strings.TrimPrefix(args[i], `"`)
 		args[i] = strings.TrimSuffix(args[i], `"`)
+		if (args[i] == "-r" || args[i] == "-w") && args[0] != "-l" {
+			args[0] = "-l"
+		}
 	}
-	cmd := exec.Command("whatis", args...)
+
+	cmd := exec.Command(CFG.DbCmd, args...)
 	b, e := cmd.Output()
 	if len(b) < 1 || e != nil {
-		e404.Write(w, r)
+		fmt.Println(e)
+		e404.Write(w, r, q)
 		return
 	}
 	var output string
@@ -210,14 +257,17 @@ var (
 func HTCode(code int, name string, desc ...string) HTErr {
 	return HTErr{code, name, desc}
 }
-func (h HTErr) Write(w http.ResponseWriter, r *http.Request) {
-	WriteHtml(w, r, h.Title(), h.Content(), r.URL.RawQuery)
+func (h HTErr) Write(w http.ResponseWriter, r *http.Request, s ...string) {
+	if len(s) == 0 {
+		s = append(s, r.URL.RawQuery)
+	}
+	WriteHtml(w, r, h.Title(), h.Content(), s[0])
 }
-func (h HTErr) Is(err error, w http.ResponseWriter, r *http.Request) bool {
+func (h HTErr) Is(err error, w http.ResponseWriter, r *http.Request, s ...string) bool {
 	if err == nil {
 		return false
 	}
-	h.Write(w, r)
+	h.Write(w, r, s...)
 	return true
 }
 
@@ -228,7 +278,7 @@ type HTErr struct {
 }
 type NetErr interface {
 	Error() HTErr
-	Write(w http.ResponseWriter, r *http.Request)
+	Write(w http.ResponseWriter, r *http.Request, s ...string)
 }
 
 func (e HTErr) Error() HTErr {
@@ -248,31 +298,37 @@ func (e HTErr) Content() string {
 	return s
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Base(r.URL.Path)
 	path = strings.TrimSuffix(path, "/")
 
-	err := r.ParseForm()
-	if e400.Is(err, w, r) {
-		return
-	}
-
 	if r.Method == "POST" {
-		searchHandler(w, r)
+		err := r.ParseForm()
+		if !e400.Is(err, w, r) {
+			searchHandler(w, r)
+		}
 		return
 	}
 
 	name := r.URL.RawQuery
-	if name != "" {
-		man := NewManPage(name)
-		html, nerr := man.Html()
-		if nerr != nil {
-			nerr.Write(w, r)
-			return
-		}
-		WriteHtml(w, r, man.Name, html, name)
+
+	if name == "manweb-help.html" {
+		WriteHtml(w, r, "Help", help, name)
 		return
 	}
-	WriteHtml(w, r, "Index", "", name)
+
+	var nerr NetErr
+	title := "Index"
+	var html string
+	if name != "" {
+		man := NewManPage(name)
+		html, nerr = man.Html()
+		if nerr != nil {
+			nerr.Write(w, r, name)
+			return
+		}
+		title = man.Name
+	}
+	WriteHtml(w, r, title, html, name)
 	return
 }

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
 :root{
 
     --dark: #262833;
@@ -18,9 +20,6 @@
 
     --dimmer: color-mix(in srgb, var(--fg-color), var(--bg-color) 70%);
     --dim: color-mix(in srgb, var(--fg-color), var(--bg-color) 80%);
-
-    font-variant-ligatures: none!important;
-    --font-family: var(--font, 'JetBrains Mono');
 
     --x-font-size: 18px;
     @media (min-width: 2000px) {
@@ -47,9 +46,11 @@
     font-size: calc( var(--scale,1) * var(--x-font-size) );
 
 }
+
 *{
     color: var(--fg-color);
-    font-family: var(--font-family), monospace;
+    font-variant-ligatures: none!important;
+    font-family: "JetBrains Mono", monospace;
     line-height: 1em;
 }
 body, html {
@@ -216,4 +217,26 @@ main{
     background-color: var(--it-color);
     color: var(--bg-color);
 }
+.help {
+    display: contents;
+}
+.help > div {
 
+    padding: 1lh 0;
+    margin: 1ch 0;
+}
+.help pre {
+    border-radius: 1ch;
+    padding: 0.1em 1ch;
+    margin: 0 1ch;
+    border: 1px var(--fg-color) solid;
+    width: 15ch;
+}
+.help td {
+    padding: 0.2lh 1ch;
+    line-height: 1.5em;
+}
+.help h3 {
+    font-size: 1.15rem;
+    margin: 0;
+}

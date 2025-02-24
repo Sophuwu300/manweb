@@ -12,6 +12,13 @@ This Go application serves man pages over HTTP. It allows users to view, search,
 - Able to correctly interpret and display incorrectly formatted man pages, to a degree.
 - Auto updates man pages when new packages are installed or removed using standard installation methods.
 
+## Extra Information
+### Performance:
+A query for all user or sudo  commands that list or organise information, shows 119 commands in 53ms.
+Searching for all C libraries for parsing, shows 38 libraries in 48ms.
+
+If I wish to find a command that configures a service, I would use:
+network interfaces,
 
 # Installation Using Apt
 

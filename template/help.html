@@ -1,0 +1,47 @@
+<div class="help">
+
+		<div>
+			<h2>Help</h2>
+		</div>
+		<div>
+			<p>To open a page, simply type the name of the page. e.g:</p>
+			<pre>ls</pre>
+			<p>Will open the ls page.</p>
+		</div>
+		<div>
+			<p>Wildcard search by using the * character. e.g:</p>
+			<pre>ls*</pre>
+			<p>Will list all pages starting with ls.</p>
+		</div>
+		<div>
+			<p>Using multiple wildcards by anding them together. e.g:</p>
+			<pre>*conf* -a *git*</pre>
+			<p>Will list all pages with the words conf and git in their name or description.</p>
+		</div>
+		<div>
+			<p>regex search by using the -r flag. e.g:</p>
+			<pre>-r "^ls"</pre>
+			<p>Will list all pages starting with ls.</p>
+		</div>
+		<div>
+			<p>Filter by page section by using the -s flag. e.g:</p>
+			<pre>ls* -s8</pre>
+			<p>Will list all pages starting with ls in section 8.</p>
+		</div>
+		<div>
+			<p>
+				Sections are as follows:
+			</p>
+			<table>
+				<tr><td>1</td><td>Executable programs or shell commands</td></tr>
+				<tr><td>2</td><td>System calls (functions provided by the kernel)</td></tr>
+				<tr><td>3</td><td>Library calls (functions within program libraries)</td></tr>
+				<tr><td>4</td><td>Special files (usually found in /dev)</td></tr>
+				<tr><td>5</td><td>File formats and conventions, e.g. /etc/passwd</td></tr>
+				<tr><td>6</td><td>Games</td></tr>
+				<tr><td>7</td><td>Miscellaneous (including macro packages and conventions), e.g. man(7), groff(7), man-pages(7)</td></tr>
+				<tr><td>8</td><td>System administration commands (usually only for root)</td></tr>
+				<tr><td>9</td><td>Kernel routines [Non standard]</td></tr>
+			</table>
+		</div>
+</div>
