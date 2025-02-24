@@ -120,14 +120,9 @@ Glob patterns are also supported in the search bar if regex not enabled.\
 - `vsftpd.5`: Open the manual page for vsftpd confuguration file if vsftpd is installed. This will show you how to configure the ftp server.
 - `vsftpd.8`: Open the manual page for vsftpd executable if vsftpd is installed. This will show how to call the ftp server from the command line.
 
-## Notes and Warnings
+## License
 
-- Regex syntax may vary when running on systems with differing core c/c++ libraries. 
-- Manual pages may be unavailable if the package is not installed or the manuals are not included by the package.
-- All manual pages that are correctly installed and comply with the manpath will be searchable and viewable.
-- Manuals that do not comply with the manpath will not be available for viewing may show up in search results.
-- If you would like to change the css styling, you should avoid changing the names, ids, or classes of the elements as they are dynamically generated. Instead, you can add properties to the existing classes or ids, or change the values of the properties.
-- the static web files are embedded into the server binary so changes to css properties will require you to recompile the binary.
+MIT License
 
 ## Help and Support
 
