@@ -16,21 +16,15 @@ recommends:
 suggests:
 conflicts:
 maintainer: "sophuwu <sophie@skisiel.com>"
-description: """manhttpd is a frontend for the linux man pages.
+description: |
+manhttpd is a frontend for the linux man pages.
 Offering a functional, minimalistic interface for viewing and finding pages.
-The service offers multiple search options:
 - Search directly by page name
 - Search by keyword/wildcard
 - Search by section number
 - Full regex name and description search
-It is very fast for the features it offers. 
-
 It is useful for serving manpages over a network, or for browsing them
 in a web browser.
-
-manhttpd is written in C and is very lightweight. It can be run as a
-systemd service or as a standalone binary.
-"""
 vendor: "sophuwu.site"
 homepage: "https://sophuwu.site/manhttpd"
 license: "MIT"
