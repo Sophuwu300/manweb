@@ -157,9 +157,29 @@ function GoToRawQuery(s) {
     let u = ChangeRawQuery(s);
     window.location.href = u;
 }
+function index(){
+  let a = ""
+	let q = document.querySelectorAll(".Sh")
+  q.forEach(e=>{
+  if(e.id!="")
+    a+=`<a href="#`+e.id+`">`+e.innerText+`</a>\n`
+    //console.log(e.id, e.innerText)
+})
+  a=`<section style="display: flex;
+    flex-direction: column;" id="index" class="Sh"><h1>INDEX</h1>`+a+`</section>`
+  console.log(a)
+  let h = document.getElementById("index")
+  h.outerHTML = a
+}
+function makeIndex (){
+document.querySelector("#NAME").parentElement.innerHTML+=`<p><a onclick="index()" id="index">Create Index</a></p>`
+let e=document.querySelector("#index")
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     style = document.getElementById("styleCss");
     SetButts();
     SetStyle();
     SetScale("0");
+    makeIndex();
 });
