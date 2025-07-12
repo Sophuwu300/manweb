@@ -33,9 +33,10 @@ contents:
 - src: ../build/manhttpd
   dst: /usr/bin/manhttpd
 - src: ./manhttpd.service
-  dst: /etc/manhttpd.service
+  dst: /etc/manhttpd/manhttpd.service
   type: config
 overrides:
   deb:
     scripts:
       postinstall: ./postinstall.sh
+      preinstall: ./preinst.sh

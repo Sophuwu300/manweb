@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	CFG.Server.Handler = ManHandler{}
-	err := CFG.Server.ListenAndServe()
+	s := CFG.DefaultConf.Server(ManHandler{})
+	err := s.ListenAndServe()
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 	}

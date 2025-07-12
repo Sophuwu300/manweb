@@ -24,7 +24,7 @@ func (m *ManPage) Where() error {
 	if m.Section != "" {
 		arg = []string{"-w", "-s" + m.Section, m.Name}
 	}
-	b, err := exec.Command("man", arg...).Output()
+	b, err := exec.Command(CFG.ManCmd, arg...).Output()
 	m.Path = strings.TrimSpace(string(b))
 	return err
 }
