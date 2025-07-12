@@ -172,7 +172,7 @@ function index(){
   h.outerHTML = a
 }
 function makeIndex (){
-document.querySelector("#NAME").parentElement.innerHTML+=`<p><a onclick="index()" id="index">Create Index</a></p>`
+document.querySelector("#NAME").parentElement.outerHTML+=`<p><a onclick="index()" id="index">Create Index</a></p>`
 let e=document.querySelector("#index")
 }
 

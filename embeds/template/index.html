@@ -1,29 +1,30 @@
+{{ define "index.html" }}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>{{ title }}@{{ hostname }}</title>
+		<title>{{ .Title }}@{{ .Hostname }}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="style.css" type="text/css">
-		<script src="script.js"></script>
-		<link rel="icon" href="icons.ico" type="image/x-icon">
+		<link rel="stylesheet" href="?static=css" type="text/css">
+		<script src="?static=js"></script>
+		<link rel="icon" href="?static=ico" type="image/x-icon">
 		<style id="styleCss"></style>
 	</head>
 <body>
 	<header class="menu" id="search">
 		<div>
-			<h3>ManWeb @{{ hostname }}</h3>
+			<h3 style="cursor: pointer;" onclick="GoToRawQuery('');">ManWeb @{{ .Hostname }}</h3>
 		</div>
 		<form class="rounded" method="post">
 			<input type="text" class="txt" name="q" autocomplete="off" >
 			<input type="submit" class="submit" value="Search">
 		</form>
 		<div class="rounded">
-			<button onclick="GoToRawQuery('manweb-help.html')">Help</button>
+			<button onclick="GoToRawQuery('manweb:help')">Help</button>
 			<button onclick="Menu(H(this).l)">Settings</button>
 		</div>
 		<script>
-			document.querySelector('input[name="q"]').value = `{{ query }}`;
+			document.querySelector('input[name="q"]').value = `{{ .Query }}`;
 		</script>
 	</header>
 	<header class="settings menu hidden" id="settings">
@@ -62,7 +63,8 @@
 		</div>
 	</header>
 	<main id="main-content">
-		{{ content }}
+		{{ .Content }}
 	</main>
 	</body>
 </html>
+{{ end }}

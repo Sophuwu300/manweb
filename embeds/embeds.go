@@ -1,0 +1,114 @@
+package embeds
+
+import (
+	"embed"
+	_ "embed"
+	"fmt"
+	"html/template"
+	"io/fs"
+	"net/http"
+	"path/filepath"
+	"sophuwu.site/manhttpd/CFG"
+	"sophuwu.site/manhttpd/neterr"
+)
+
+//go:embed template/index.html
+var index string
+
+//go:embed template/help.html
+var help string
+
+//go:embed static/*
+var static embed.FS
+
+type StaticFS struct {
+	ContentType string
+	Length      string
+	Content     []byte
+}
+
+func (s *StaticFS) WriteTo(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", s.ContentType)
+	w.Header().Set("Content-Length", s.Length)
+	w.WriteHeader(http.StatusOK)
+	w.Write(s.Content)
+}
+
+var constentExt = map[string]string{
+	"css": "text/css",
+	"js":  "text/javascript",
+	"ico": "image/x-icon",
+}
+var files map[string]StaticFS
+
+func openStatic() {
+	d, _ := static.ReadDir("static")
+	var sfs StaticFS
+	files = make(map[string]StaticFS, len(d))
+	ext := ""
+	var ok bool
+	var f fs.DirEntry
+	for _, f = range d {
+		sfs = StaticFS{"", "", nil}
+		if f.IsDir() {
+			continue
+		}
+		ext = filepath.Ext(f.Name())[1:]
+		if sfs.ContentType, ok = constentExt[ext]; !ok {
+			continue
+		}
+		sfs.Content, _ = static.ReadFile("static/" + f.Name())
+		sfs.Length = fmt.Sprint(len(sfs.Content))
+		files[ext] = sfs
+	}
+	if len(files) != 3 {
+		neterr.Fatal("Failed to load static files, expected 3 types (css, js, ico), got", len(files))
+	}
+}
+
+var t *template.Template
+
+type Page struct {
+	Title    string
+	Hostname string
+	Content  template.HTML
+	Query    string
+}
+
+func init() {
+	openStatic()
+	var e error
+	t, e = template.New("index.html").Parse(index)
+	if e != nil {
+		neterr.Fatal("Failed to parse index template:", e)
+	}
+}
+
+func StaticFile(name string) (*StaticFS, bool) {
+	f, ok := files[name]
+	return &f, ok
+}
+
+func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr) {
+	p := Page{
+		Title:    err.Error().Title(),
+		Hostname: CFG.Hostname,
+		Content:  template.HTML(err.Error().Content()),
+		Query:    r.URL.RawQuery,
+	}
+	t.ExecuteTemplate(w, "index.html", p)
+}
+
+func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q string) {
+	p := Page{
+		Title:    title,
+		Hostname: CFG.Hostname,
+		Content:  template.HTML(html),
+		Query:    q,
+	}
+	t.ExecuteTemplate(w, "index.html", p)
+}
+func Help(w http.ResponseWriter, r *http.Request) {
+
+	WriteHtml(w, r, "Help", help, r.URL.RawQuery)
+}
