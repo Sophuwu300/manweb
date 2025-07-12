@@ -3,19 +3,13 @@ Description=front end service for parsing man into html over http
 After=network.target
 
 [Service]
-# Path to the command binary
-ExecStart=/usr/bin/manhttpd
-# Recommended to use /tmp as the working directory since data is not saved
-WorkingDirectory=/tmp
+ExecStart=/usr/bin/manhttpd /etc/manhttpd/manhttpd.conf
+
+WorkingDirectory=/var/lib/manhttpd
 Type=simple
 
-
-#Environment="ListenPort="
-#Environment="ListenAddr="
-#Environment="MANDOCPATH="
-#Environment="HOSTNAME="
-
-#User=
+User=manhttpd
+Group=manhttpd
 
 [Install]
 WantedBy=multi-user.target

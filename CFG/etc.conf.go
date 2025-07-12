@@ -25,7 +25,7 @@ var DefaultConf = EtcConf{
 	Port:        "8082",
 	Addr:        "0.0.0.0",
 	RequireAuth: false,
-	PasswdFile:  "/etc/manhttpd/passwd",
+	PasswdFile:  "/var/lib/manhttpd/authuwu",
 	TldrPages:   false,
 	EnableStats: false,
 	StatisticDB: "/var/lib/manhttpd/stats.db",

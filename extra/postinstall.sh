@@ -11,6 +11,11 @@ if [[ ! -d /var/lib/manhttpd ]]; then
 fi
 chown manhttpd:manhttpd /var/lib/manhttpd
 
+if [[ -f /etc/manhttpd/manhttpd.conf ]]; then
+  mv /etc/manhttpd/manhttpd.conf /etc/manhttpd/manhttpd.conf.bak
+  printf "%s %s\n" "hostname" "$(hostname)" >> /etc/manhttpd/manhttpd.conf
+fi
+
 systemctl daemon-reload
 systemctl enable manhttpd
 systemctl start manhttpd
