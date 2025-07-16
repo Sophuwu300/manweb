@@ -1,13 +1,7 @@
-git.sophuwu.com/authuwu v0.0.0-20250716185239-acc2ef94bd9e h1:LeE1q3UoucDZf+O6xF6fUizBXo5e7Q9Hav5/SO+n34A=
-git.sophuwu.com/authuwu v0.0.0-20250716185239-acc2ef94bd9e/go.mod h1:8Iwgnydo+Zud59xPW1HZKflqjVfXslLr0isASGRhj+M=
-git.sophuwu.com/authuwu v0.0.0-20250716202553-43ab0ab7e160 h1:2Oy4q8J0cKHzFuSn/wW39KQqitDgsoErqLpUAfpRo8I=
-git.sophuwu.com/authuwu v0.0.0-20250716202553-43ab0ab7e160/go.mod h1:8Iwgnydo+Zud59xPW1HZKflqjVfXslLr0isASGRhj+M=
-git.sophuwu.com/authuwu v0.0.0-20250716210115-86d1e146d409 h1:AjJx1CpjN81WoHqt0Ar7P0Huuh3MX7BIGMQf9l2YEx8=
-git.sophuwu.com/authuwu v0.0.0-20250716210115-86d1e146d409/go.mod h1:8Iwgnydo+Zud59xPW1HZKflqjVfXslLr0isASGRhj+M=
 git.sophuwu.com/authuwu v0.0.0-20250716222415-8755549e8fed h1:ixaJKErKg3l5+1i5ArQtzEPemqMLPRybwpgOQ8ZWu6A=
 git.sophuwu.com/authuwu v0.0.0-20250716222415-8755549e8fed/go.mod h1:8Iwgnydo+Zud59xPW1HZKflqjVfXslLr0isASGRhj+M=
-git.sophuwu.com/gophuwu v0.0.0-20250711231123-1d1d6daa6d8f h1:xtZI73NLnlKbNoVtJiyIgp8s7exmyGCuNkcGZiFXc1Y=
-git.sophuwu.com/gophuwu v0.0.0-20250711231123-1d1d6daa6d8f/go.mod h1:2j1SAWD5STcFV5oKUm4vChACQ1peXCKpfJLbgE/sD00=
+git.sophuwu.com/gophuwu v0.0.0-20250716231858-26e29b0c923a h1:eh4yOMWfnwuv7sJ35tZD/fNzeSfs0v2gHnYqiHtpm2M=
+git.sophuwu.com/gophuwu v0.0.0-20250716231858-26e29b0c923a/go.mod h1:2j1SAWD5STcFV5oKUm4vChACQ1peXCKpfJLbgE/sD00=
 github.com/DataDog/zstd v1.4.1 h1:3oxKN3wbHibqx897utPC2LTQU4J+IHWWJO+glkAkpFM=
 github.com/DataDog/zstd v1.4.1/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
 github.com/Sereal/Sereal v0.0.0-20190618215532-0b8ac451a863 h1:BRrxwOZBolJN4gIwvZMJY1tzqBvQgpaZiQRuIDD40jM=
