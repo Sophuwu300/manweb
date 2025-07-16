@@ -37,6 +37,9 @@ contents:
 - src: ./manhttpd.service
   dst: /etc/manhttpd/manhttpd.service
   type: config
+- src: ./manhttpd.conf
+  dst: /etc/manhttpd/manhttpd.conf
+  type: config
 overrides:
   deb:
     scripts:

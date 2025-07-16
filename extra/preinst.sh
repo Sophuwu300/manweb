@@ -7,7 +7,10 @@ fi
 
 getent passwd manhttpd > /dev/null
 if [ $? -ne 0 ]; then
-  adduser --system --disabled-password --home /var/lib/manhttpd --no-create-home --group manhttpd manhttpd
+  adduser --system manhttpd
+  usermod -aG manhttpd manhttpd
+  usermod --shell /bin/false manhttpd
+  usermod --home /var/lib/manhttpd manhttpd
 fi
 
 if [ ! -d /var/lib/manhttpd ]; then
