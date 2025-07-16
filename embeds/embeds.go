@@ -4,12 +4,12 @@ import (
 	"embed"
 	_ "embed"
 	"fmt"
+	"git.sophuwu.com/manhttpd/CFG"
+	"git.sophuwu.com/manhttpd/neterr"
 	"html/template"
 	"io/fs"
 	"net/http"
 	"path/filepath"
-	"sophuwu.site/manhttpd/CFG"
-	"sophuwu.site/manhttpd/neterr"
 )
 
 //go:embed template/index.html
@@ -89,12 +89,12 @@ func StaticFile(name string) (*StaticFS, bool) {
 	return &f, ok
 }
 
-func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr) {
+func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr, q string) {
 	p := Page{
 		Title:    err.Error().Title(),
 		Hostname: CFG.HttpHostname(r),
 		Content:  template.HTML(err.Error().Content()),
-		Query:    r.URL.RawQuery,
+		Query:    q,
 	}
 	t.ExecuteTemplate(w, "index.html", p)
 }

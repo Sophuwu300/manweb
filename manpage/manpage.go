@@ -2,10 +2,10 @@ package manpage
 
 import (
 	"fmt"
+	"git.sophuwu.com/manhttpd/CFG"
+	"git.sophuwu.com/manhttpd/neterr"
 	"os/exec"
 	"regexp"
-	"sophuwu.site/manhttpd/CFG"
-	"sophuwu.site/manhttpd/neterr"
 	"strings"
 )
 
@@ -44,7 +44,7 @@ func (m *ManPage) Html() (string, neterr.NetErr) {
 	return html, nil
 }
 
-var ManDotName = regexp.MustCompile(`^([a-zA-Z0-9_\-]+)(?:\.([0-9a-z]+))?$`)
+var ManDotName = regexp.MustCompile(`^([^ ]+)(?:\.([0-9a-z]+))?$`)
 
 func New(s string) (m ManPage) {
 	name := ManDotName.FindStringSubmatch(s)

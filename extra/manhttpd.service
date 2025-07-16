@@ -1,9 +1,9 @@
 [Unit]
-Description=front end service for parsing man into html over http
+Description=manhttpd - HTTP server for serving manual pages
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/manhttpd /etc/manhttpd/manhttpd.conf
+ExecStart=/usr/bin/manhttpd
 
 WorkingDirectory=/var/lib/manhttpd
 Type=simple

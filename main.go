@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"git.sophuwu.com/manhttpd/CFG"
+	"git.sophuwu.com/manhttpd/embeds"
+	"git.sophuwu.com/manhttpd/manpage"
+	"git.sophuwu.com/manhttpd/neterr"
 	"net/http"
 	"os/exec"
 	"regexp"
-	"sophuwu.site/manhttpd/CFG"
-	"sophuwu.site/manhttpd/embeds"
-	"sophuwu.site/manhttpd/manpage"
-	"sophuwu.site/manhttpd/neterr"
 	"strings"
 )
 
@@ -27,7 +27,7 @@ var RxWhatIs = regexp.MustCompile(`([a-zA-Z0-9_\-]+) [(]([0-9a-z]+)[)][\- ]+(.*)
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if neterr.Err400.Is(err) {
-		embeds.WriteError(w, r, neterr.Err400)
+		embeds.WriteError(w, r, neterr.Err400, r.Form.Get("q"))
 		return
 	}
 	q := r.Form.Get("q")
@@ -60,7 +60,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command(CFG.DbCmd, args...)
 	b, e := cmd.Output()
 	if len(b) < 1 || e != nil {
-		embeds.WriteError(w, r, neterr.Err404)
+		embeds.WriteError(w, r, neterr.Err404, q)
 		return
 	}
 	var output string
@@ -103,7 +103,7 @@ func (m ManHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		man := manpage.New(name)
 		html, nerr = man.Html()
 		if nerr != nil {
-			embeds.WriteError(w, r, nerr)
+			embeds.WriteError(w, r, nerr, name)
 			return
 		}
 		title = man.Name

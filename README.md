@@ -46,7 +46,7 @@ If you wish to compile from source, you will need Go installed.\
 
  ```sh
 # download the source code
-git clone "https://sophuwu.site/manhttpd" && cd manhttpd
+git clone "https://git.sophuwu.com/manhttpd" && cd manhttpd
  
 # build the binary with go
 go build -ldflags="-s -w" -trimpath -o build/manhttpd
@@ -65,10 +65,9 @@ TLS and authentication are not implemented in this server.
 ### Variables in the service file:
 
 Environment Variables:\
-`HOSTNAME`: Used for http proxying.\
+`HOSTNAME`: Used for displaying the hostname on the webpage.\
 `ListenPort`: If unset, the server will default to 8082.\
 `ListenAddr`: This should be changed if you are on a public network.\
-`MANDOCPATH`: Path to the mandoc executable. If unset, the server will attempt to find it in the PATH.
 
 ### System Variables:
 

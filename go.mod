@@ -1,4 +1,4 @@
-module sophuwu.site/manhttpd
+module git.sophuwu.com/manhttpd
 
 go 1.23.0
 
