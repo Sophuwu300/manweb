@@ -75,7 +75,7 @@ type Page struct {
 	Query    string
 }
 
-func init() {
+func OpenAndParse() {
 	openStatic()
 	var e error
 	t, e = template.New("index.html").Parse(index)
@@ -92,7 +92,7 @@ func StaticFile(name string) (*StaticFS, bool) {
 func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr) {
 	p := Page{
 		Title:    err.Error().Title(),
-		Hostname: CFG.Hostname,
+		Hostname: CFG.HttpHostname(r),
 		Content:  template.HTML(err.Error().Content()),
 		Query:    r.URL.RawQuery,
 	}
@@ -102,7 +102,7 @@ func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr) {
 func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q string) {
 	p := Page{
 		Title:    title,
-		Hostname: CFG.Hostname,
+		Hostname: CFG.HttpHostname(r),
 		Content:  template.HTML(html),
 		Query:    q,
 	}

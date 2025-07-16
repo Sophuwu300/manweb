@@ -1,99 +1,127 @@
 package CFG
 
 import (
+	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
 )
 
 var ConfFile = "/etc/manhttpd/manhttpd.conf"
 
-type EtcConf struct {
-	Hostname    string
-	Port        string
-	Addr        string
-	RequireAuth bool
-	PasswdFile  string
-	TldrPages   bool
-	EnableStats bool
-	StatisticDB string
-}
+var NoConfError = errors.New("no configuration file found")
 
-var DefaultConf = EtcConf{
-	Hostname:    "",
-	Port:        "8082",
-	Addr:        "0.0.0.0",
-	RequireAuth: false,
-	PasswdFile:  "/var/lib/manhttpd/authuwu",
-	TldrPages:   false,
-	EnableStats: false,
-	StatisticDB: "/var/lib/manhttpd/stats.db",
-}
-
-func (c *EtcConf) Parse() error {
-	var mp = map[string]any{
-		"hostname":     &(c.Hostname),
-		"port":         &(c.Port),
-		"addr":         &(c.Addr),
-		"require_auth": &(c.RequireAuth),
-		"passwd_file":  &(c.PasswdFile),
-		"tldr_pages":   &(c.TldrPages),
-		"enable_stats": &(c.EnableStats),
-		"statistic_db": &(c.StatisticDB),
-	}
-	b, err := os.ReadFile(ConfFile)
-	if err != nil {
-		return err
-	}
-	var j, k string
-	var kv []string
-	for _, v := range strings.Split(string(b), "\n") {
-		if len(v) == 0 || v[0] == '#' {
-			continue // skip empty lines and comments
+func setV(a any) func(j string) error {
+	switch v := a.(type) {
+	case *string:
+		return func(j string) error {
+			*v = j
+			return nil
 		}
-		kv = strings.SplitN(v, " ", 2)
-		if len(kv) != 2 {
-			return fmt.Errorf("invalid line in %s: %s", ConfFile, v)
-		}
-		k = strings.TrimSpace(kv[0])
-		j = strings.TrimSpace(kv[1])
-		if val, ok := mp[k]; ok {
-			switch v := val.(type) {
-			case *string:
-				*v = j
-			case *bool:
-				*v = j == "yes"
-			default:
-				return fmt.Errorf("unsupported type for key %s in %s", k, ConfFile)
+	case *bool:
+		return func(j string) error {
+			j = strings.ToLower(j)
+			*v = "yes" == j
+			if (*v) || "no" == j {
+				return nil
 			}
-		} else {
-			return fmt.Errorf("unknown key %s in %s", k, ConfFile)
+			return errors.New("invalid boolean value: " + j)
 		}
 	}
 	return nil
 }
 
-func ParseEtcConf() (EtcConf, error) {
-	c := DefaultConf
-	if err := c.Parse(); err != nil {
-		return c, fmt.Errorf("failed to parse %s: %w", ConfFile, err)
+func rmComment(s *string) bool {
+	i := strings.Index(*s, "#")
+	if i >= 0 {
+		*s = (*s)[:i]
 	}
-	if c.Port == "" {
-		c.Port = "8082"
-	}
-	if c.Addr == "" {
-		c.Addr = "0.0.0.0"
-	}
-	if c.Hostname != "" {
-		Hostname = c.Hostname
-	}
-	return c, nil
+	*s = strings.TrimSpace(*s)
+	return len(*s) == 0
 }
 
-func (c *EtcConf) Server(h http.Handler) *http.Server {
-	return &http.Server{
-		Addr:    c.Addr + ":" + c.Port,
-		Handler: h,
+func getKV(line, k, v *string) bool {
+	i := strings.Index(*line, "=")
+	if i < 0 {
+		return false
 	}
+	*k = strings.TrimSpace((*line)[:i])
+	*v = strings.TrimSpace((*line)[i+1:])
+	return len(*k) == 0 || len(*v) == 0
+}
+
+var mp = map[string]any{
+	"hostname":      &Hostname,
+	"port":          &Port,
+	"addr":          &Addr,
+	"require_auth":  &RequireAuth,
+	"passwd_file":   &PasswdFile,
+	"tldr_pages":    &TldrPages,
+	"tldr_dir":      &TldrDir,
+	"enable_stats":  &EnableStats,
+	"statistic_db":  &StatisticDB,
+	"use_tls":       &UseTLS,
+	"tls_cert_file": &TLSCertFile,
+	"tls_key_file":  &TLSKeyFile,
+}
+
+func parse() error {
+	b, err := os.ReadFile(ConfFile)
+	if err != nil {
+		return NoConfError
+	}
+	var line, k, v string
+	var i int
+	var a any
+	var fn func(j string) error
+	var ok bool
+	errFmt := "invalid %s in " + ConfFile + " at line %d: %s"
+	ErrPrint := func(e, s string) {
+		fmt.Fprintf(os.Stderr, errFmt, e, i+1, s)
+	}
+	for i, line = range strings.Split(string(b), "\n") {
+		if len(line) == 0 {
+			continue
+		}
+		if rmComment(&line) {
+			continue
+		}
+		if getKV(&line, &k, &v) {
+			ErrPrint("format", line)
+			continue
+		}
+		if a, ok = mp[k]; !ok {
+			ErrPrint("key", k)
+			continue
+		}
+		fn = setV(a)
+		if fn == nil {
+			continue
+		}
+		err = fn(v)
+		if err != nil {
+			ErrPrint(fmt.Sprintf("value for %s", k), v)
+			continue
+		}
+	}
+	return nil
+}
+
+func MakeConfig() string {
+	var s, i string
+	for k, a := range mp {
+		switch v := a.(type) {
+		case *string:
+			i = *v
+		case *bool:
+			i = map[bool]string{true: "yes", false: "no"}[*v]
+		default:
+			continue
+		}
+		if len(i) == 0 {
+			continue
+		}
+		s += fmt.Sprintf("%s = %s\n", k, i)
+	}
+	return s
 }

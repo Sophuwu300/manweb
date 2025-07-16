@@ -12,12 +12,13 @@ import (
 	"strings"
 )
 
+func init() {
+	CFG.ParseConfig()
+	embeds.OpenAndParse()
+}
+
 func main() {
-	s := CFG.DefaultConf.Server(ManHandler{})
-	err := s.ListenAndServe()
-	if err != nil {
-		fmt.Println("Error starting server:", err)
-	}
+	CFG.ListenAndServe(ManHandler{})
 }
 
 var RxWords = regexp.MustCompile(`("[^"]+")|([^ ]+)`).FindAllString
