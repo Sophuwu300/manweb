@@ -3,7 +3,7 @@ build:
 	go build -ldflags="-w -s" -trimpath -o build/manhttpd
 
 build_deb: ./build/manhttpd
-	cd extras && nfpm pkg --packager deb --config nfpm.yaml --target ../build/manhttpd.deb
+	cd extra && nfpm pkg --packager deb --config nfpm.yaml --target ../build/manhttpd.deb
 
 install_deb: ./build/manhttpd.deb
 	sudo apt-get install -y ./build/manhttpd.deb
