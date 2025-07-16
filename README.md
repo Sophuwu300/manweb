@@ -27,8 +27,7 @@ This will also make the server available as a systemd service, and start it auto
 This isn't common on most systems, so the default configuration should work out of the box in most cases.
 
 ```bash
-curl https://cdn.sophuwu.site/deb/addrepo.sh | sudo sh
-sudo apt update
+curl https://cdn.sophuwu.com/deb/addrepo.sh | sudo sh
 sudo apt install manhttpd
 ```
 
@@ -44,15 +43,17 @@ If you wish to compile from source, you will need Go installed.\
 
 ## Compiling The Binary
 
- ```sh
-# download the source code
-git clone "https://git.sophuwu.com/manhttpd" && cd manhttpd
- 
-# build the binary with go
-go build -ldflags="-s -w" -trimpath -o build/manhttpd
+ ```bash
+git clone "https://git.sophuwu.com/manhttpd"
+cd manhttpd
 
-# install the binary into the system
-sudo install ./build/manhttpd /usr/local/bin/manhttpd
+# build binary
+make build
+make install_bin
+
+# build a debian package and install it
+make build_deb
+make install_deb
 ```
 
 # Using As Systemd Service:
@@ -128,5 +129,5 @@ MIT License
 I don't know how this git pull thing works. I will try if I see any issues. I've never collaborated on code before. If you have any suggestions, or questions about anything I've written, I would be happy to hear your thoughts.\
 contant info: 
 * discord: [@sophuwu](https://discord.com/users/sophuwu)
-* email: [sophie@sophuwu.site](mailto:sophie@sophuwu.site)
+* email: [sophie@sophuwu.com](mailto:sophie@sophuwu.com)
 

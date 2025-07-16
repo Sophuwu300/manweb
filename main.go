@@ -2,23 +2,94 @@ package main
 
 import (
 	"fmt"
+	"git.sophuwu.com/authuwu"
+	"git.sophuwu.com/authuwu/userpass"
+	"git.sophuwu.com/gophuwu/flags"
 	"git.sophuwu.com/manhttpd/CFG"
 	"git.sophuwu.com/manhttpd/embeds"
 	"git.sophuwu.com/manhttpd/manpage"
 	"git.sophuwu.com/manhttpd/neterr"
+	"golang.org/x/term"
 	"net/http"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func init() {
+	err := flags.NewFlag("conf", "c", "configuration file to use", "/etc/manhttpd/manhttpd.conf")
+	neterr.ChkFtl("creating conf flag:", err)
+	err = flags.NewFlag("passwd", "p", "open the program in password edit mode", false)
+	neterr.ChkFtl("creating passwd flag:", err)
+	err = flags.NewFlag("user", "u", "choose a username to set/change/delete password for", "")
+	neterr.ChkFtl("creating user flag:", err)
+	err = flags.ParseArgs()
+	neterr.ChkFtl("parsing flags:", err)
 	CFG.ParseConfig()
 	embeds.OpenAndParse()
 }
 
+func setPasswd() {
+	u, err := flags.GetStringFlag("user")
+	if err != nil {
+		fmt.Println("getting user flag:", err)
+		return
+	}
+	if u == "" {
+		fmt.Println("no user specified, use -u <username> to set a password for a user")
+		return
+	}
+	var in []byte
+	fmt.Printf("Enter password for user %s (leave empty to delete user): \n", u)
+	in, err = term.ReadPassword(0)
+	if err != nil {
+		fmt.Println("could not read password:", err)
+		return
+	}
+	password := string(in)
+	if password == "" {
+		fmt.Printf("delete user %s? (y/N): ", u)
+		in = make([]byte, 1)
+		os.Stdin.Read(in)
+		if in[0] != 'y' && in[0] != 'Y' {
+			userpass.DeleteUser(u)
+			fmt.Printf("User %s deleted.\n", u)
+			return
+		}
+		fmt.Printf("exiting with no changes\n")
+		return
+	}
+	fmt.Println("Enter password again: ")
+	in, err = term.ReadPassword(0)
+	if err != nil {
+		fmt.Println("could not read password:", err)
+		return
+	}
+	if string(in) != password {
+		fmt.Println("Passwords do not match, please try again.")
+		return
+	}
+	err = userpass.NewUser(u, password)
+}
+
 func main() {
-	CFG.ListenAndServe(ManHandler{})
+	b, err := flags.GetBoolFlag("passwd")
+	neterr.ChkFtl("getting passwd flag:", err)
+	if b {
+		err = authuwu.OpenDB(CFG.PasswdFile)
+		neterr.ChkFtl("opening password database:", err)
+		setPasswd()
+		authuwu.CloseDB()
+		return
+	}
+	if CFG.RequireAuth {
+		err = authuwu.OpenDB(CFG.PasswdFile)
+		neterr.ChkFtl("error opening password database:", err)
+		PageHandler = authuwu.NewAuthuwuHandler(PageHandler, time.Hour*24*3, embeds.LoginPage)
+	}
+	CFG.ListenAndServe(Handler)
 }
 
 var RxWords = regexp.MustCompile(`("[^"]+")|([^ ]+)`).FindAllString
@@ -72,20 +143,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	embeds.WriteHtml(w, r, "Search", output, q)
 }
 
-type ManHandle interface {
-	ServeHTTP(http.ResponseWriter, *http.Request)
-}
-
-type ManHandler struct {
-}
-
-func (m ManHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Query().Has("static") {
-		StaticHandler(w, r)
-		return
-	}
-
+var PageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		SearchHandler(w, r)
 		return
@@ -109,7 +167,26 @@ func (m ManHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		title = man.Name
 	}
 	embeds.WriteHtml(w, r, title, html, name)
-	return
+})
+
+var Handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Query().Has("static") {
+		StaticHandler(w, r)
+		return
+	}
+	PageHandler.ServeHTTP(w, r)
+})
+
+type ManHandler struct {
+	h http.Handler
+}
+
+func (m ManHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Query().Has("static") {
+		StaticHandler(w, r)
+		return
+	}
+	m.h.ServeHTTP(w, r)
 }
 
 func StaticHandler(w http.ResponseWriter, r *http.Request) {

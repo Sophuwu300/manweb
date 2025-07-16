@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Login</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="?static=css" type="text/css">
+		<script src="?static=js"></script>
+		<link rel="icon" href="?static=ico" type="image/x-icon">
+        <style>
+            form {
+                width: fit-content!important;
+                margin: 0!important;
+                transform: translate(-50%,-50%) !important;
+                top: 50% !important;
+                position: absolute !important;
+                left: 50% !important;
+            }
+            h3 {
+                margin: 0 auto!important;
+            }
+            .inin {
+                width: 30ch!important;
+            }
+            .rounded {
+                margin-bottom: 0.5lh!important;
+                
+            }
+            .subbutt {
+                cursor: pointer!important;
+                border-radius: 1ch!important;
+                padding: 0.5ch 0.5lh!important;
+                display: block!important;
+            }
+            .subbutt:hover {
+                background-color: #0004!important;
+            }
+        </style>
+		<style id="styleCss"></style>
+	</head>
+    <body>
+        <header class="menu" id="search">
+            <h3 style="cursor: pointer;" onclick="GoToRawQuery('');">ManWeb Login {{ HostName }}</h3>
+        </header>
+    	<main id="main-content">
+            <form method="POST" action="?authuwu:login">
+                <div class="rounded">
+                    <label for="username">Username</label><input type="text" class="inin" autocomplete="off" id="username" name="username" required>
+                </div>
+                <div class="rounded">
+                <label for="password">Password</label><input type="password" class="inin" autocomplete="off" id="password" name="password" required>
+                </div>
+                <div class="rounded">
+                    <input class="subbutt" type="submit" value="Login">
+                </div>
+            </form>
+	    </main>
+    </body>
+</html>

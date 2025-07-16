@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# This script is used change the users and passwords for manhttpd
+# This script must be run as root or with sudo
+if [[ $EUID -ne 0 ]]; then
+  echo "This script must be run as root or with sudo" 1>&2
+  exit 1
+fi
+
+if [[ "$1" == "" ]]; then
+  echo 'usage: manhttpd-passwd <username>'
+  exit 1
+fi
+if [[ "$1" == "--help" || "$1" == "-h" || "$1" == "-?" || "$1" == "help" ]]; then
+  sudo -u manhttpd /usr/bin/manhttpd --help
+  exit 0
+fi
+declare runing="no"
+systemctl is-active manhttpd >/dev/null 2>&1
+if [[ "$?" == "0" ]]; then
+  runing="yes"
+  systemctl stop manhttpd
+fi
+sudo -u manhttpd /usr/bin/manhttpd -pu $@
+if [[ "$runing" == "yes" ]]; then
+  systemctl start manhttpd
+fi
+

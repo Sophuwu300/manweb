@@ -15,7 +15,7 @@ depends:
 recommends:
 suggests:
 conflicts:
-maintainer: "sophuwu <sophie@skisiel.com>"
+maintainer: "sophuwu <sophie@sophuwu.com>"
 description: |
   manhttpd is a frontend for the linux man pages.
   Offering a functional, minimalistic interface for viewing and finding pages.
@@ -25,13 +25,15 @@ description: |
   - Full regex name and description search
   It is useful for serving manpages over a network, or for browsing them
   in a web browser.
-vendor: "sophuwu.site"
+vendor: "sophuwu.com"
 homepage: "https://git.sophuwu.com/manhttpd"
 license: "MIT"
 changelog: ""
 contents:
 - src: ../build/manhttpd
   dst: /usr/bin/manhttpd
+- src: ./manhttpd-passwd
+  dst: /usr/bin/manhttpd-passwd
 - src: ./manhttpd.service
   dst: /etc/manhttpd/manhttpd.service
   type: config

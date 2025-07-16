@@ -10,6 +10,7 @@ import (
 	"io/fs"
 	"net/http"
 	"path/filepath"
+	"strings"
 )
 
 //go:embed template/index.html
@@ -17,6 +18,9 @@ var index string
 
 //go:embed template/help.html
 var help string
+
+//go:embed template/login.html
+var LoginPage string
 
 //go:embed static/*
 var static embed.FS
@@ -82,6 +86,12 @@ func OpenAndParse() {
 	if e != nil {
 		neterr.Fatal("Failed to parse index template:", e)
 	}
+	LoginPage = strings.ReplaceAll(LoginPage, "{{ HostName }}", func() string {
+		if CFG.Hostname != "" {
+			return "@" + CFG.Hostname
+		}
+		return ""
+	}())
 }
 
 func StaticFile(name string) (*StaticFS, bool) {

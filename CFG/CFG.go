@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"git.sophuwu.com/gophuwu/flags"
 	"git.sophuwu.com/manhttpd/neterr"
 	"golang.org/x/sys/unix"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -86,11 +86,15 @@ func getEnvs() {
 func ParseConfig() {
 	checkCmds()
 
-	if len(os.Args) > 1 && strings.HasSuffix(os.Args[1], ".conf") {
-		ConfFile = os.Args[1]
+	s, err := flags.GetStringFlag("conf")
+	if err != nil {
+		neterr.Fatal("Failed to get configuration file flag:", err)
+	}
+	if s != "" {
+		ConfFile = s
 	}
 
-	err := parse()
+	err = parse()
 	if err != nil {
 		if !errors.Is(err, NoConfError) {
 			neterr.Fatal("Failed to parse configuration file:", err)
@@ -120,27 +124,29 @@ func HttpHostname(r *http.Request) string {
 }
 
 func ListenAndServe(h http.Handler) {
+	var err error
 	server := http.Server{
 		Addr:    Addr + ":" + Port,
 		Handler: h,
 	}
-	var err error
+	sigchan := make(chan os.Signal)
 	go func() {
-		if UseTLS && TLSCertFile != "" && TLSKeyFile != "" {
-			err = server.ListenAndServeTLS(TLSCertFile, TLSKeyFile)
-		} else {
-			err = server.ListenAndServe()
-		}
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("Error starting server: %v", err)
+		signal.Notify(sigchan, unix.SIGINT, unix.SIGTERM, unix.SIGQUIT, unix.SIGKILL, unix.SIGSTOP)
+		<-sigchan
+		fmt.Println("Stopping server...")
+		err = server.Shutdown(context.Background())
+		if err != nil {
+			fmt.Println("Error stopping server: %v", err)
 		}
 	}()
-	sigchan := make(chan os.Signal)
-	signal.Notify(sigchan, unix.SIGINT, unix.SIGTERM, unix.SIGQUIT, unix.SIGKILL, unix.SIGSTOP)
-	s := <-sigchan
-	println("stopping: got signal", s.String())
-	err = server.Shutdown(context.Background())
-	if err != nil {
-		log.Println("Error stopping server: %v", err)
+	fmt.Println("Starting server on", server.Addr)
+	if UseTLS && TLSCertFile != "" && TLSKeyFile != "" {
+		err = server.ListenAndServeTLS(TLSCertFile, TLSKeyFile)
+	} else {
+		err = server.ListenAndServe()
 	}
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		fmt.Println("Error starting server:", err)
+	}
+	fmt.Println("Server stopped.")
 }
