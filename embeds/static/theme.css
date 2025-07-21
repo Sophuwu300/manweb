@@ -240,3 +240,42 @@ main{
     font-size: 1.15rem;
     margin: 0;
 }
+
+.tldr-page {
+    width: calc(100% - 2ch);
+    margin: 0;
+    padding: 1lh 1ch;
+}
+pre.tldr {
+    overflow-y: scroll;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+.tldr code {
+  padding: 0.2ch 0.5ch;
+  border-radius: 0.5ch;
+  margin: 0 0.25ch;
+}
+pre.tldr, .tldr code {
+    background: #101015;
+    border: 1px #696969 solid;
+}
+p.tldr.list-item {
+    line-height: 1.75em;
+}
+.list-item.tldr {
+    margin: 0;
+}
+pre.list-item.tldr {
+    margin-top: 0.3em;
+    margin-left: 0.5ch;
+    width: calc(100% - 2rem);
+}
+p.list-item.tldr, .desc.tldr:first-of-type {
+    margin-top: 1.5lh;
+}
+.desc.tldr {
+    margin: 0;
+    padding: 0;
+    height: 1.25lh;
+}

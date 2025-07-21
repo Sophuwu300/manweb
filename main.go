@@ -9,6 +9,7 @@ import (
 	"git.sophuwu.com/manhttpd/embeds"
 	"git.sophuwu.com/manhttpd/manpage"
 	"git.sophuwu.com/manhttpd/neterr"
+	"git.sophuwu.com/manhttpd/tldr"
 	"golang.org/x/term"
 	"net/http"
 	"os"
@@ -29,6 +30,8 @@ func init() {
 	neterr.ChkFtl("parsing flags:", err)
 	CFG.ParseConfig()
 	embeds.OpenAndParse()
+	err = tldr.Open()
+	neterr.ChkFtl("opening tldr pages:", err)
 }
 
 func setPasswd() {
@@ -95,28 +98,7 @@ func main() {
 var RxWords = regexp.MustCompile(`("[^"]+")|([^ ]+)`).FindAllString
 var RxWhatIs = regexp.MustCompile(`([a-zA-Z0-9_\-]+) [(]([0-9a-z]+)[)][\- ]+(.*)`).FindAllStringSubmatch
 
-func SearchHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if neterr.Err400.Is(err) {
-		embeds.WriteError(w, r, neterr.Err400, r.Form.Get("q"))
-		return
-	}
-	q := r.Form.Get("q")
-	if q == "" {
-		http.Redirect(w, r, r.URL.Path, http.StatusFound)
-	}
-	if strings.HasPrefix(q, "manweb:") {
-		http.Redirect(w, r, "?"+q, http.StatusFound)
-		return
-	}
-	if func() bool {
-		m := manpage.New(q)
-		return m.Where() == nil
-	}() {
-		http.Redirect(w, r, "?"+q, http.StatusFound)
-		return
-	}
-
+func SearchHandler(w http.ResponseWriter, r *http.Request, q string) {
 	var args = RxWords("-lw "+q, -1)
 
 	for i := range args {
@@ -144,29 +126,34 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 var PageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.RawQuery
+	name = strings.TrimSpace(name)
 	if r.Method == "POST" {
-		SearchHandler(w, r)
+		n := r.PostFormValue("q")
+		n = strings.TrimSpace(n)
+		if n != "" {
+			name = n
+			if strings.ContainsAny(name, `"*?^|`) {
+				SearchHandler(w, r, name)
+				return
+			}
+		}
+	}
+	if name == "" {
+		embeds.WriteHtml(w, r, "Index", "", "")
 		return
 	}
-	name := r.URL.RawQuery
 	if name == "manweb:help" {
 		embeds.Help(w, r)
 		return
 	}
-
-	var nerr neterr.NetErr
-	title := "Index"
-	var html string
-	if name != "" {
-		man := manpage.New(name)
-		html, nerr = man.Html()
-		if nerr != nil {
-			embeds.WriteError(w, r, nerr, name)
-			return
-		}
-		title = man.Name
+	if manpage.Http(w, r, name) {
+		return
 	}
-	embeds.WriteHtml(w, r, title, html, name)
+	if CFG.TldrPages && tldr.Http(w, r, name) {
+		return
+	}
+	SearchHandler(w, r, name)
 })
 
 var Handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

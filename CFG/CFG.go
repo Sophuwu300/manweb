@@ -25,6 +25,7 @@ var (
 	PasswdFile  string = "/var/lib/manhttpd/authuwu"
 	TldrPages   bool   = false
 	TldrDir     string = "/var/lib/manhttpd/tldr"
+	TldrGitSrc  string = "https://github.com/tldr-pages/tldr.git"
 	EnableStats bool   = false
 	StatisticDB string = "/var/lib/manhttpd/manhttpd.db"
 	UseTLS      bool   = false

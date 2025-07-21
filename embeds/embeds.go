@@ -99,6 +99,14 @@ func StaticFile(name string) (*StaticFS, bool) {
 	return &f, ok
 }
 
+func ChkWriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr, q string) bool {
+	if err == nil {
+		return false
+	}
+	WriteError(w, r, err, q)
+	return true
+}
+
 func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr, q string) {
 	p := Page{
 		Title:    err.Error().Title(),

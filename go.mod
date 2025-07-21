@@ -12,4 +12,5 @@ require (
 require (
 	github.com/asdine/storm/v3 v3.2.1 // indirect
 	go.etcd.io/bbolt v1.4.2 // indirect
+	golang.org/x/net v0.39.0 // indirect
 )

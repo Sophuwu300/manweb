@@ -49,7 +49,7 @@ func HTCode(code int, name string, desc ...string) NetErr {
 	return HTErr{code, name, desc}
 }
 
-func (h HTErr) Is(err error) bool {
+func Is(err error) bool {
 	if err == nil {
 		return false
 	}
@@ -63,7 +63,6 @@ type HTErr struct {
 }
 type NetErr interface {
 	Error() HTErr
-	Is(error) bool
 }
 
 func (e HTErr) Error() HTErr {

@@ -58,6 +58,7 @@ var mp = map[string]any{
 	"passwd_file":   &PasswdFile,
 	"tldr_pages":    &TldrPages,
 	"tldr_dir":      &TldrDir,
+	"tldr_git_src":  &TldrGitSrc,
 	"enable_stats":  &EnableStats,
 	"statistic_db":  &StatisticDB,
 	"use_tls":       &UseTLS,
