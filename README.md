@@ -114,7 +114,7 @@ Glob patterns are also supported in the search bar if regex not enabled.\
 
 - `ls*`: List all pages that begin with `ls`, including `ls`, `lsblk`, `lsmod`, etc.
 - `-r ^ls`: Same as above but with regex. Usually more useful for with multiple queries and logical operators. Like finding any C++ reference to `std::string` and `std::vector`.
-- `ls` or `ls -s1` or `ls.1`: Open the page for the `ls` user command. This is orignal man behavior.
+- `ls` or `ls.1`: Open the page for the `ls` user command. This is orignal man behavior.
 - `-r ^ls -s1`: List all pages that begin with `ls` in section 1 (user/bin commands). Useful for finding commands that list any information without requiring sudo.
 - `*config* -s8`: List pages for sudo commands containing keyword `config`. this can will show you commands that edit critical system files.  
 - `vsftpd.5`: Open the manual page for vsftpd confuguration file if vsftpd is installed. This will show you how to configure the ftp server.
