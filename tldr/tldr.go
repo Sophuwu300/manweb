@@ -273,6 +273,6 @@ func Http(w http.ResponseWriter, r *http.Request, q string) bool {
 		embeds.WriteError(w, r, neterr.Err500, q)
 		return true
 	}
-	embeds.WriteHtml(w, r, "TLDR: "+name, html, q)
+	embeds.WriteHtml(w, r, "TLDR: "+name, html, q, q)
 	return true
 }

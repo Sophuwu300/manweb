@@ -117,7 +117,10 @@ func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr, q str
 	t.ExecuteTemplate(w, "index.html", p)
 }
 
-func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q string) {
+func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q string, setRawQuery ...string) {
+	if len(setRawQuery) > 0 {
+		html += "\n" + fmt.Sprintf(`<script>SetRawQuery("%s");</script>`, setRawQuery[0]) + "\n"
+	}
 	p := Page{
 		Title:    title,
 		Hostname: CFG.HttpHostname(r),
@@ -126,7 +129,10 @@ func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q str
 	}
 	t.ExecuteTemplate(w, "index.html", p)
 }
-func Help(w http.ResponseWriter, r *http.Request) {
-
-	WriteHtml(w, r, "Help", help, r.URL.RawQuery)
+func Help(w http.ResponseWriter, r *http.Request, q string) bool {
+	if q == "manweb:help" {
+		WriteHtml(w, r, "Help", help, q, q)
+		return true
+	}
+	return false
 }

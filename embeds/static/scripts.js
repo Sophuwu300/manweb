@@ -136,11 +136,11 @@ function SetButts() {
     }(butt,eval("Set" + n.n), H(butt).l));
     }(elemH,H(elemH)));
 }
-
 function ChangeRawQuery(s="") {
-
     let u = document.URL;
-    let i = u.indexOf("?");
+    let i = u.indexOf("#");
+    if (i >= 0) u = u.substring(0, i);
+    i = u.indexOf("?");
     if (s.length > 0 && !s.startsWith("?")) {
         s = "?" + s;
     }

@@ -122,7 +122,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request, q string) {
 			output += fmt.Sprintf(`<p><a href="?%s.%s">%s (%s)</a> - %s</p>%c`, line[1], line[2], line[1], line[2], line[3], 10)
 		}
 	}
-	embeds.WriteHtml(w, r, "Search", output, q)
+	embeds.WriteHtml(w, r, "Search", output, q, "")
 }
 
 var PageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -140,11 +140,10 @@ var PageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *h
 		}
 	}
 	if name == "" {
-		embeds.WriteHtml(w, r, "Index", "", "")
+		embeds.WriteHtml(w, r, "Index", "", "", "")
 		return
 	}
-	if name == "manweb:help" {
-		embeds.Help(w, r)
+	if embeds.Help(w, r, name) {
 		return
 	}
 	if manpage.Http(w, r, name) {

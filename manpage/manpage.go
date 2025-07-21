@@ -18,6 +18,13 @@ type ManPage struct {
 	Path    string
 }
 
+func (m *ManPage) Url() string {
+	if m.Section != "" && m.Name != "" {
+		return fmt.Sprintf("%s.%s", m.Name, m.Section)
+	}
+	return ""
+}
+
 func (m *ManPage) Title() string {
 	if m.Section != "" && m.Name != "" {
 		return fmt.Sprintf("man %s.%s", m.Name, m.Section)
@@ -31,7 +38,7 @@ func ext(s string) (string, string) {
 	}
 	return s, ""
 }
-	
+
 var ManDotName = regexp.MustCompile(`^[^ .]+(\.[0-9]+[a-z]*)?$`)
 
 func (m *ManPage) Find(q string) bool {
@@ -76,7 +83,7 @@ func Http(w http.ResponseWriter, r *http.Request, q string) bool {
 	if embeds.ChkWriteError(w, r, err, q) {
 		return true
 	}
-	embeds.WriteHtml(w, r, m.Title(), html, q)
+	embeds.WriteHtml(w, r, m.Title(), html, q, m.Url())
 	return true
 }
 
