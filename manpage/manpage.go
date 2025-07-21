@@ -86,16 +86,3 @@ func Http(w http.ResponseWriter, r *http.Request, q string) bool {
 	embeds.WriteHtml(w, r, m.Title(), html, q, m.Url())
 	return true
 }
-
-// var ManDotName = regexp.MustCompile(`^([^ ]+?)(?:\.([0-9a-z]+))?$`)
-//
-// func New(s string) (m ManPage) {
-// 	name := ManDotName.FindStringSubmatch(s)
-// 	if len(name) >= 2 {
-// 		m.Name = name[1]
-// 	}
-// 	if len(name) >= 3 {
-// 		m.Section = name[2]
-// 	}
-// 	return
-// }

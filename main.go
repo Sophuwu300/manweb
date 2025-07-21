@@ -163,18 +163,6 @@ var Handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.
 	PageHandler.ServeHTTP(w, r)
 })
 
-type ManHandler struct {
-	h http.Handler
-}
-
-func (m ManHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Query().Has("static") {
-		StaticHandler(w, r)
-		return
-	}
-	m.h.ServeHTTP(w, r)
-}
-
 func StaticHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("static")
 	if f, ok := embeds.StaticFile(q); ok {
