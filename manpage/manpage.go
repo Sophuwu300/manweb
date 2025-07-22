@@ -39,7 +39,7 @@ func ext(s string) (string, string) {
 	return s, ""
 }
 
-var ManDotName = regexp.MustCompile(`^[^ .]+(\.[0-9]+[a-z]*)?$`)
+var ManDotName = regexp.MustCompile(`^[^ ]+?(\.[0-9]+[a-z]*)?$`)
 
 func (m *ManPage) Find(q string) bool {
 	if !ManDotName.MatchString(q) {
@@ -60,6 +60,7 @@ func (m *ManPage) Find(q string) bool {
 
 var LinkRemover = regexp.MustCompile(`(<a [^>]*>)|(</a>)`).ReplaceAllString
 var HTMLManName = regexp.MustCompile(`(?:<b>)?([a-zA-Z0-9_.:\-]+)(?:</b>)?\(([0-9][0-9a-z]*)\)`)
+var htmlRep = `<a href="?$1.$2">$1($2)</a>`
 
 func (m *ManPage) Html() (string, neterr.NetErr) {
 	b, err := exec.Command(CFG.Mandoc, "-Thtml", "-O", "fragment", m.Path).Output()
@@ -67,10 +68,7 @@ func (m *ManPage) Html() (string, neterr.NetErr) {
 		return "", neterr.Err500
 	}
 	html := LinkRemover(string(b), "")
-	html = HTMLManName.ReplaceAllStringFunc(html, func(s string) string {
-		mn := HTMLManName.FindStringSubmatch(s)
-		return fmt.Sprintf(`<a href="?%s.%s">%s(%s)</a>`, mn[1], mn[2], mn[1], mn[2])
-	})
+	html = HTMLManName.ReplaceAllString(html, htmlRep)
 	return html, nil
 }
 
