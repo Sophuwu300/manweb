@@ -3,9 +3,8 @@ package CFG
 import (
 	"context"
 	"errors"
-	"fmt"
 	"git.sophuwu.com/gophuwu/flags"
-	"git.sophuwu.com/manhttpd/neterr"
+	"git.sophuwu.com/manhttpd/logs"
 	"golang.org/x/sys/unix"
 	"net/http"
 	"os"
@@ -41,20 +40,20 @@ func which(s string) (string, error) {
 
 func checkCmds() {
 	var err error
+	errfmt := "dependency `%s` not found"
 	Mandoc, err = which("mandoc")
-	fmt.Println(Mandoc, err)
 	if err != nil || len(Mandoc) == 0 {
-		neterr.Fatal("dependency `mandoc` not found in $PATH, is it installed?\n")
+		logs.Fatalf(errfmt, "mandoc")
 	}
 	ManCmd, err = which("man")
-	if err != nil {
-		neterr.Fatal("dependency `man` not found in $PATH, is it installed?\n")
+	if err != nil || len(ManCmd) == 0 {
+		logs.Fatalf(errfmt, "man")
 	}
 	DbCmd, err = which("apropos")
 	if err != nil || len(DbCmd) == 0 {
 		DbCmd, err = which("whatis")
 		if err != nil || len(DbCmd) == 0 {
-			neterr.Fatal("dependency `apropos` or `whatis` not found in $PATH, is it installed?\n")
+			logs.Fatalf(errfmt, "apropos")
 		}
 	}
 }
@@ -88,9 +87,7 @@ func ParseConfig() {
 	checkCmds()
 
 	s, err := flags.GetStringFlag("conf")
-	if err != nil {
-		neterr.Fatal("Failed to get configuration file flag:", err)
-	}
+	logs.CheckFatal("getting conf flag", err)
 	if s != "" {
 		ConfFile = s
 	}
@@ -98,7 +95,7 @@ func ParseConfig() {
 	err = parse()
 	if err != nil {
 		if !errors.Is(err, NoConfError) {
-			neterr.Fatal("Failed to parse configuration file:", err)
+			logs.Fatal("parsing conf file", err)
 		}
 		getEnvs()
 	}
@@ -134,20 +131,20 @@ func ListenAndServe(h http.Handler) {
 	go func() {
 		signal.Notify(sigchan, unix.SIGINT, unix.SIGTERM, unix.SIGQUIT, unix.SIGKILL, unix.SIGSTOP)
 		<-sigchan
-		fmt.Println("Stopping server...")
+		logs.Log("Stopping server...")
 		err = server.Shutdown(context.Background())
 		if err != nil {
-			fmt.Println("Error stopping server: %v", err)
+			logs.Log("Error stopping server: %v", err)
 		}
 	}()
-	fmt.Println("Starting server on", server.Addr)
+	logs.Log("Starting server on", server.Addr)
 	if UseTLS && TLSCertFile != "" && TLSKeyFile != "" {
 		err = server.ListenAndServeTLS(TLSCertFile, TLSKeyFile)
 	} else {
 		err = server.ListenAndServe()
 	}
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		fmt.Println("Error starting server:", err)
+		logs.Log("Error starting server:", err)
 	}
-	fmt.Println("Server stopped.")
+	logs.Log("Server stopped.")
 }

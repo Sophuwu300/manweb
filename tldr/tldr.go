@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"git.sophuwu.com/manhttpd/CFG"
 	"git.sophuwu.com/manhttpd/embeds"
+	"git.sophuwu.com/manhttpd/logs"
 	"git.sophuwu.com/manhttpd/neterr"
 	"net/http"
 	"os"
@@ -66,48 +67,43 @@ func updateTldrPages() error {
 	_ = os.Remove(upcmd)
 	err := os.WriteFile(upcmd, []byte(sh), 0755)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to write update script: %w", err)
 	}
 	cmd := exec.Command(upcmd)
 	cmd.Env = os.Environ()
 	cmd.Dir = CFG.TldrDir
-	var b []byte
-	b, err = cmd.CombinedOutput()
-	fmt.Println("update tldr pages:", string(b))
+	_, err = cmd.CombinedOutput()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to run update script: %w", err)
 	}
 	return nil
 }
 
-func Open() error {
+func Open() {
 	if !CFG.TldrPages {
-		return nil
+		return
 	}
 	PageDir = filepath.Join(CFG.TldrDir, "pages")
 
 	update := false
 	st, err := os.Stat(PageDir)
 	if err != nil && os.IsNotExist(err) {
-		if err = os.MkdirAll(PageDir, 0755); err != nil {
-			return err
-		}
+		err = os.MkdirAll(PageDir, 0755)
+		logs.CheckFatal("unable to create tldr pages directory", err)
 		update = true
 	} else if time.Now().After(st.ModTime().AddDate(0, 0, 14)) {
 		update = true
 	}
 	if update {
-		if err = updateTldrPages(); err != nil {
-			return fmt.Errorf("failed to update tldr pages: %w", err)
-		}
+		logs.Log("Updating tldr pages...")
+		logs.CheckFatal("unable to update tldr pages", err)
+		logs.Log("Tldr pages updated successfully.")
 	}
 
 	TldrPagesMap = make(map[string]string)
 	var de []os.DirEntry
 	de, err = os.ReadDir(PageDir)
-	if err != nil {
-		return err
-	}
+	logs.CheckFatal("unable to read tldr pages directory", err)
 	var name string
 	for _, d := range de {
 		if d.IsDir() {
@@ -116,7 +112,6 @@ func Open() error {
 		name = strings.TrimSuffix(d.Name(), ".md")
 		TldrPagesMap[name] = filepath.Join(PageDir, d.Name())
 	}
-	return nil
 }
 
 type TldrPage struct {

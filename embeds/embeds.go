@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"git.sophuwu.com/manhttpd/CFG"
+	"git.sophuwu.com/manhttpd/logs"
 	"git.sophuwu.com/manhttpd/neterr"
 	"html/template"
 	"io/fs"
@@ -65,9 +66,6 @@ func openStatic() {
 		sfs.Length = fmt.Sprint(len(sfs.Content))
 		files[ext] = sfs
 	}
-	if len(files) != 3 {
-		neterr.Fatal("Failed to load static files, expected 3 types (css, js, ico), got", len(files))
-	}
 }
 
 var t *template.Template
@@ -83,9 +81,7 @@ func OpenAndParse() {
 	openStatic()
 	var e error
 	t, e = template.New("index.html").Parse(index)
-	if e != nil {
-		neterr.Fatal("Failed to parse index template:", e)
-	}
+	logs.CheckFatal("unable to parse embedded html", e)
 	LoginPage = strings.ReplaceAll(LoginPage, "{{ HostName }}", func() string {
 		if CFG.Hostname != "" {
 			return "@" + CFG.Hostname

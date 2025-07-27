@@ -3,6 +3,7 @@ package CFG
 import (
 	"errors"
 	"fmt"
+	"git.sophuwu.com/manhttpd/logs"
 	"os"
 	"strings"
 )
@@ -78,7 +79,7 @@ func parse() error {
 	var ok bool
 	errFmt := "invalid %s in " + ConfFile + " at line %d: %s"
 	ErrPrint := func(e, s string) {
-		fmt.Fprintf(os.Stderr, errFmt, e, i+1, s)
+		logs.Logf(errFmt, e, i+1, s)
 	}
 	for i, line = range strings.Split(string(b), "\n") {
 		if len(line) == 0 {

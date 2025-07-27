@@ -7,6 +7,7 @@ import (
 	"git.sophuwu.com/gophuwu/flags"
 	"git.sophuwu.com/manhttpd/CFG"
 	"git.sophuwu.com/manhttpd/embeds"
+	"git.sophuwu.com/manhttpd/logs"
 	"git.sophuwu.com/manhttpd/manpage"
 	"git.sophuwu.com/manhttpd/neterr"
 	"git.sophuwu.com/manhttpd/tldr"
@@ -21,17 +22,16 @@ import (
 
 func init() {
 	err := flags.NewFlag("conf", "c", "configuration file to use", "/etc/manhttpd/manhttpd.conf")
-	neterr.ChkFtl("creating conf flag:", err)
+	logs.CheckFatal("creating conf flag", err)
 	err = flags.NewFlag("passwd", "p", "open the program in password edit mode", false)
-	neterr.ChkFtl("creating passwd flag:", err)
+	logs.CheckFatal("creating passwd flag", err)
 	err = flags.NewFlag("user", "u", "choose a username to set/change/delete password for", "")
-	neterr.ChkFtl("creating user flag:", err)
+	logs.CheckFatal("creating user flag", err)
 	err = flags.ParseArgs()
-	neterr.ChkFtl("parsing flags:", err)
+	logs.CheckFatal("parsing flags", err)
 	CFG.ParseConfig()
 	embeds.OpenAndParse()
-	err = tldr.Open()
-	neterr.ChkFtl("opening tldr pages:", err)
+	tldr.Open()
 }
 
 func setPasswd() {
@@ -79,18 +79,25 @@ func setPasswd() {
 
 func main() {
 	b, err := flags.GetBoolFlag("passwd")
-	neterr.ChkFtl("getting passwd flag:", err)
+	logs.CheckFatal("getting passwd flag", err)
 	if b {
 		err = authuwu.OpenDB(CFG.PasswdFile)
-		neterr.ChkFtl("opening password database:", err)
+		if err != nil {
+			if err.Error() == "timeout" {
+				logs.Error("The database is currently opened by another process.")
+				return
+			}
+			logs.Fatal("opening password database", err)
+		}
 		setPasswd()
 		authuwu.CloseDB()
 		return
 	}
 	if CFG.RequireAuth {
 		err = authuwu.OpenDB(CFG.PasswdFile)
-		neterr.ChkFtl("error opening password database:", err)
+		logs.CheckFatal("opening password database", err)
 		PageHandler = authuwu.NewAuthuwuHandler(PageHandler, time.Hour*24*3, embeds.LoginPage)
+		defer authuwu.CloseDB()
 	}
 	CFG.ListenAndServe(Handler)
 }

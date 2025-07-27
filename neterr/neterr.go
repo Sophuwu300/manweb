@@ -2,27 +2,7 @@ package neterr
 
 import (
 	"fmt"
-	"os"
 )
-
-func ChkFtl(str string, e error) {
-	if e == nil {
-		return
-	}
-	Fatal(str, e)
-}
-
-func Fatal(v ...any) {
-	fmt.Fprintln(os.Stderr, "manhttpd exited due to an error it could not recover from.")
-	fmt.Fprintf(os.Stderr, "Error: %s\n", func() string {
-		s := ""
-		for _, i := range v {
-			s += fmt.Sprintf("%v ", i)
-		}
-		return s
-	}())
-	os.Exit(1)
-}
 
 var (
 	Err400 = HTCode(400, "Bad Request",
