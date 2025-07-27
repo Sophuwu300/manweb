@@ -1,19 +1,23 @@
 default: build
+
 build:
-	go build -ldflags="-w -s" -trimpath -o build/manhttpd
+	go build -ldflags="-w -s" -trimpath -o build/manweb
 
-build_deb: ./build/manhttpd
-	cd extra && nfpm pkg --packager deb --config nfpm.yaml --target ../build/manhttpd.deb
+clean:
+	rm -rf build
 
-install_deb: ./build/manhttpd.deb
-	sudo apt-get install -y ./build/manhttpd.deb
+build_deb:
+	cd extra && nfpm pkg --packager deb --config nfpm.yaml --target ../build/manweb.deb
 
-install_bin: ./build/manhttpd
+install_deb: ./build/manweb.deb
+	sudo apt-get install -y ./build/manweb.deb
+
+install_bin: ./build/manweb
 	sudo apt-get install -y mandoc
 	sudo sh ./extras/preinst.sh
-	sudo install ./build/manhttpd /usr/bin/manhttpd
-	sudo install ./extras/manhttpd-passwd /usr/bin/manhttpd-passwd
-	sudo install ./extras/manhttpd.service /etc/manhttpd/manhttpd.service
-	sudo install ./extras/manhttpd.conf /etc/manhttpd/manhttpd.conf
+	sudo install ./build/manweb /usr/bin/manweb
+	sudo install ./extras/manweb-passwd /usr/bin/manweb-passwd
+	sudo install ./extras/manweb.service /etc/manweb/manweb.service
+	sudo install ./extras/manweb.conf /etc/manweb/manweb.conf
 	sudo sh ./extras/postinstall.sh
 

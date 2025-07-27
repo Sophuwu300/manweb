@@ -5,12 +5,12 @@ import (
 	"git.sophuwu.com/authuwu"
 	"git.sophuwu.com/authuwu/userpass"
 	"git.sophuwu.com/gophuwu/flags"
-	"git.sophuwu.com/manhttpd/CFG"
-	"git.sophuwu.com/manhttpd/embeds"
-	"git.sophuwu.com/manhttpd/logs"
-	"git.sophuwu.com/manhttpd/manpage"
-	"git.sophuwu.com/manhttpd/neterr"
-	"git.sophuwu.com/manhttpd/tldr"
+	"git.sophuwu.com/manweb/CFG"
+	"git.sophuwu.com/manweb/embeds"
+	"git.sophuwu.com/manweb/logs"
+	"git.sophuwu.com/manweb/manpage"
+	"git.sophuwu.com/manweb/neterr"
+	"git.sophuwu.com/manweb/tldr"
 	"golang.org/x/term"
 	"net/http"
 	"os"
@@ -21,7 +21,7 @@ import (
 )
 
 func init() {
-	err := flags.NewFlag("conf", "c", "configuration file to use", "/etc/manhttpd/manhttpd.conf")
+	err := flags.NewFlag("conf", "c", "configuration file to use", "/etc/manweb/manweb.conf")
 	logs.CheckFatal("creating conf flag", err)
 	err = flags.NewFlag("passwd", "p", "open the program in password edit mode", false)
 	logs.CheckFatal("creating passwd flag", err)

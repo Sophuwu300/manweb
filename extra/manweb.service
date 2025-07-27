@@ -1,0 +1,15 @@
+[Unit]
+Description=manweb - HTTP server for serving manual pages
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/manweb
+
+WorkingDirectory=/var/lib/manweb
+Type=simple
+
+User=manweb
+Group=manweb
+
+[Install]
+WantedBy=multi-user.target

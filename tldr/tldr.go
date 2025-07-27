@@ -2,11 +2,10 @@ package tldr
 
 import (
 	"errors"
-	"fmt"
-	"git.sophuwu.com/manhttpd/CFG"
-	"git.sophuwu.com/manhttpd/embeds"
-	"git.sophuwu.com/manhttpd/logs"
-	"git.sophuwu.com/manhttpd/neterr"
+	"git.sophuwu.com/manweb/CFG"
+	"git.sophuwu.com/manweb/embeds"
+	"git.sophuwu.com/manweb/logs"
+	"git.sophuwu.com/manweb/neterr"
 	"net/http"
 	"os"
 	"strings"
@@ -18,100 +17,49 @@ import (
 
 func GitDir() string { return filepath.Join(CFG.TldrDir, "tldr.git") }
 
-func getGitList(path string, mp *map[string]string) error {
-	cmd := exec.Command("/bin/git", "--git-dir", GitDir(), "--no-color", "show", "main:"+path)
-	cmd.Dir = CFG.TldrDir
-	b, err := cmd.Output()
-	if err != nil {
-		return err
-	}
-	var k, v string
-	for _, v = range strings.Split(string(b), "\n") {
-		if strings.HasSuffix(v, ".md") {
-			v = strings.TrimSpace(v)
-			k = strings.TrimSuffix(v, ".md")
-			v = filepath.Join(path, v)
-			(*mp)[k] = v
-		}
-	}
-	return nil
-}
-
-var shspt = `#!/bin/bash
-
-cd '{{ .TldrDir }}'
-if [[ -d '{{ .GitDir }}' ]]; then
-	rm -rf '{{ .GitDir }}'
-fi
-set -e
-
-git clone --filter=blob:none --no-checkout '{{ .TldrGitSrc }}' '{{ .GitDir }}'
-cd '{{ .GitDir }}'
-git sparse-checkout init
-git sparse-checkout set pages/linux/*.md pages/common/*.md
-git checkout main
-mkdir -p '{{ .TldrDir }}/pages'
-find "{{ .GitDir }}/pages/common" -type f -name "*.md" -exec cp "{}" '{{ .TldrDir }}/pages/' \;
-find "{{ .GitDir }}/pages/linux" -type f -name "*.md" -exec cp "{}" '{{ .TldrDir }}/pages/' \;
-`
-
 var TldrPagesMap = make(map[string]string)
-
-var PageDir string
-
-func updateTldrPages() error {
-	sh := strings.ReplaceAll(shspt, "{{ .TldrDir }}", CFG.TldrDir)
-	sh = strings.ReplaceAll(sh, "{{ .GitDir }}", GitDir())
-	sh = strings.ReplaceAll(sh, "{{ .TldrGitSrc }}", CFG.TldrGitSrc)
-	upcmd := filepath.Join(CFG.TldrDir, "update.sh")
-	_ = os.Remove(upcmd)
-	err := os.WriteFile(upcmd, []byte(sh), 0755)
-	if err != nil {
-		return fmt.Errorf("failed to write update script: %w", err)
-	}
-	cmd := exec.Command(upcmd)
-	cmd.Env = os.Environ()
-	cmd.Dir = CFG.TldrDir
-	_, err = cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("failed to run update script: %w", err)
-	}
-	return nil
-}
 
 func Open() {
 	if !CFG.TldrPages {
 		return
 	}
-	PageDir = filepath.Join(CFG.TldrDir, "pages")
 
-	update := false
-	st, err := os.Stat(PageDir)
+	_ = os.MkdirAll(CFG.TldrDir, 0755)
+	var cmd *exec.Cmd
+	st, err := os.Stat(GitDir())
 	if err != nil && os.IsNotExist(err) {
-		err = os.MkdirAll(PageDir, 0755)
-		logs.CheckFatal("unable to create tldr pages directory", err)
-		update = true
-	} else if time.Now().After(st.ModTime().AddDate(0, 0, 14)) {
-		update = true
+		cmd = exec.Command("/bin/git", "clone", "--bare", CFG.TldrGitSrc, GitDir())
+	} else if err != nil {
+		logs.CheckFatal("unable to access tldr pages repository", err)
+	} else if !st.IsDir() {
+		logs.Fatalf("tldr pages repository is not a directory: %s", GitDir())
+	} else if st.ModTime().Before(time.Now().AddDate(0, 0, -14)) {
+		cmd = exec.Command("/bin/git", "--git-dir", GitDir(), "fetch", "--all")
 	}
-	if update {
-		logs.Log("Updating tldr pages...")
-		logs.CheckFatal("unable to update tldr pages", err)
-		logs.Log("Tldr pages updated successfully.")
+	if cmd != nil {
+		cmd.Dir = CFG.TldrDir
+		err = cmd.Run()
+		logs.CheckFatal("unable to clone tldr pages repository", err)
 	}
 
 	TldrPagesMap = make(map[string]string)
-	var de []os.DirEntry
-	de, err = os.ReadDir(PageDir)
-	logs.CheckFatal("unable to read tldr pages directory", err)
-	var name string
-	for _, d := range de {
-		if d.IsDir() {
-			continue
+	fn := func(path string) {
+		cmd = exec.Command("/bin/git", "--no-pager", "--git-dir", GitDir(), "ls-tree", "--name-only", "main:pages/"+path)
+		cmd.Dir = CFG.TldrDir
+		var b []byte
+		b, err = cmd.Output()
+		logs.CheckFatal("unable to list tldr pages", err)
+		for _, line := range strings.Split(string(b), "\n") {
+			line = strings.TrimSpace(line)
+			if len(line) == 0 || !strings.HasSuffix(line, ".md") {
+				continue
+			}
+			name := strings.TrimSuffix(line, ".md")
+			TldrPagesMap[name] = filepath.Join(path, line)
 		}
-		name = strings.TrimSuffix(d.Name(), ".md")
-		TldrPagesMap[name] = filepath.Join(PageDir, d.Name())
 	}
+	fn("common")
+	fn("linux")
 }
 
 type TldrPage struct {
@@ -137,12 +85,17 @@ func (p *TldrPage) open() error {
 	if err != nil {
 		return err
 	}
-	// cmd := exec.Command("/bin/git", "--git-dir", GitDir(), "--no-color", "show", "main:"+p.Path)
-	// cmd.Dir = CFG.TldrDir
-	// b, err := cmd.Output()
-	b, err := os.ReadFile(p.Path)
-	p.Content = string(b)
-	return err
+	cmd := exec.Command("/bin/git", "--git-dir", GitDir(), "show", "main:pages/"+p.Path)
+	cmd.Dir = CFG.TldrDir
+	b, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	if len(b) == 0 {
+		return errors.New("Page not found: " + p.Name)
+	}
+	p.Content = strings.TrimSpace(string(b))
+	return nil
 }
 
 /*

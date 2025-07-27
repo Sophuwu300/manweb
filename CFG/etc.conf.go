@@ -3,12 +3,12 @@ package CFG
 import (
 	"errors"
 	"fmt"
-	"git.sophuwu.com/manhttpd/logs"
+	"git.sophuwu.com/manweb/logs"
 	"os"
 	"strings"
 )
 
-var ConfFile = "/etc/manhttpd/manhttpd.conf"
+var ConfFile = "/etc/manweb/manweb.conf"
 
 var NoConfError = errors.New("no configuration file found")
 

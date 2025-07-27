@@ -2,9 +2,9 @@ package manpage
 
 import (
 	"fmt"
-	"git.sophuwu.com/manhttpd/CFG"
-	"git.sophuwu.com/manhttpd/embeds"
-	"git.sophuwu.com/manhttpd/neterr"
+	"git.sophuwu.com/manweb/CFG"
+	"git.sophuwu.com/manweb/embeds"
+	"git.sophuwu.com/manweb/neterr"
 	"net/http"
 	"os/exec"
 	"path/filepath"

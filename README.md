@@ -1,6 +1,11 @@
-# Go Man Page Web Server
+# Man Web
+A Service to show man pages on the web.
+It allows for easy viewing and advanced searching of man pages in a web browser.
+It uses the current system's manpages, so you will always have the correct documentation
+to all the commands and libraries installed on your system.
 
-This Go application serves man pages over HTTP. It allows users to view, search, and browse man pages directly from a web browser. The server dynamically integrates the hostname into the pages and provides static file support (CSS and favicon).
+Written in GoLang, so the only dependencies are `man` and `mandoc` packages.
+To use tldr, `git` will be required to download the tldr pages.
 
 ## Features
 
@@ -28,7 +33,7 @@ This isn't common on most systems, so the default configuration should work out 
 
 ```bash
 curl https://cdn.sophuwu.com/deb/addrepo.sh | sudo sh
-sudo apt install manhttpd
+sudo apt install manweb
 ```
 
 # Compiling From Source
@@ -44,8 +49,8 @@ If you wish to compile from source, you will need Go installed.\
 ## Compiling The Binary
 
  ```bash
-git clone "https://git.sophuwu.com/manhttpd"
-cd manhttpd
+git clone "https://git.sophuwu.com/manweb"
+cd manweb
 
 # build binary
 make build
@@ -73,33 +78,33 @@ Environment Variables:\
 ### System Variables:
 
 `User`: Reccomended to use your login user so the service can access your ~/.local man pages. But not required.\
-`ExecStart`: The path to the manhttpd binary. If you installed it to /usr/local/bin, you can leave it as is.\
+`ExecStart`: The path to the manweb binary. If you installed it to /usr/local/bin, you can leave it as is.\
 `WorkingDirectory`: This should be /tmp since the server doesn't need to write to disk.\
 
 ```sh
 # to edit paths, users, and environment variables if needed
-nano manhttpd.service 
+nano manweb.service 
 
 # install the service file to systemd and load it
-sudo install manhttpd.service /etc/systemd/system/manhttpd.service
+sudo install manweb.service /etc/systemd/system/manweb.service
 sudo systemctl daemon-reload
 
 # start the service and check its status
-sudo systemctl start manhttpd.service
-sudo systemctl status manhttpd.service
+sudo systemctl start manweb.service
+sudo systemctl status manweb.service
 
 # to keep the service running after a reboot
-sudo systemctl enable manhttpd.service
+sudo systemctl enable manweb.service
 
 # to stop the service and disable it from restarting
-sudo systemctl stop manhttpd.service
-sudo systemctl disable manhttpd.service
+sudo systemctl stop manweb.service
+sudo systemctl disable manweb.service
 
 # to edit the server configuration after installation
-sudo systemctl edit manhttpd.service
+sudo systemctl edit manweb.service
 sudo systemctl daemon-reload 
-sudo systemctl reload-or-restart manhttpd.service
-sudo systemctl status manhttpd.service
+sudo systemctl reload-or-restart manweb.service
+sudo systemctl status manweb.service
 ```
 
 # Accessing the Web Interface

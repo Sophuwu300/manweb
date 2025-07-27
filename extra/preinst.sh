@@ -1,27 +1,32 @@
 #!/bin/bash
 
-getent group manhttpd > /dev/null
+getent group manweb > /dev/null
 if [ $? -ne 0 ]; then
-  addgroup --system manhttpd
+  addgroup --system manweb
 fi
 
-getent passwd manhttpd > /dev/null
+getent passwd manweb > /dev/null
 if [ $? -ne 0 ]; then
-  adduser --system manhttpd
-  usermod -aG manhttpd manhttpd
-  usermod --shell /bin/false manhttpd
-  usermod --home /var/lib/manhttpd manhttpd
+  adduser --system manweb
+  usermod -aG manweb manweb
+  usermod --shell /bin/false manweb
+  usermod --home /var/lib/manweb manweb
 fi
 
-if [ ! -d /var/lib/manhttpd ]; then
-  mkdir -p /var/lib/manhttpd
+if [ ! -d /var/lib/manweb ]; then
+  mkdir -p /var/lib/manweb
 fi
 
-if [ -d /var/lib/manhttpd ]; then
-  chown manhttpd:manhttpd /var/lib/manhttpd
-  chmod 0775 /var/lib/manhttpd
+if [ -d /var/lib/manweb ]; then
+  chown manweb:manweb /var/lib/manweb
+  chmod 0775 /var/lib/manweb
 fi
 
-if [ ! -d /etc/manhttpd ]; then
-  mkdir -p /etc/manhttpd
+if [ ! -d /etc/manweb ]; then
+  mkdir -p /etc/manweb
 fi
+
+if [ -d /etc/systemd/system/manhttpd.service ]; then
+  systemctl disable manhttpd
+fi
+

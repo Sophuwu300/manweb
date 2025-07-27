@@ -1,18 +1,18 @@
 #!/bin/bash
 
-if [ -f /etc/manhttpd/manhttpd.service ]; then
-  ln -sf /etc/manhttpd/manhttpd.service /etc/systemd/system/manhttpd.service
+if [ -f /etc/manweb/manweb.service ]; then
+  ln -sf /etc/manweb/manweb.service /etc/systemd/system/manweb.service
 fi
 
-if [ ! -d /var/lib/manhttpd ]; then
-  mkdir -p /var/lib/manhttpd
+if [ ! -d /var/lib/manweb ]; then
+  mkdir -p /var/lib/manweb
 fi
 
-if [ -d /var/lib/manhttpd ]; then
-  chown manhttpd:manhttpd /var/lib/manhttpd
-  chmod 755 /var/lib/manhttpd
+if [ -d /var/lib/manweb ]; then
+  chown manweb:manweb /var/lib/manweb
+  chmod 755 /var/lib/manweb
 fi
 
 systemctl daemon-reload
-systemctl enable manhttpd
-systemctl start manhttpd
+systemctl enable manweb
+systemctl start manweb

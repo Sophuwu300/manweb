@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"git.sophuwu.com/gophuwu/flags"
-	"git.sophuwu.com/manhttpd/logs"
+	"git.sophuwu.com/manweb/logs"
 	"golang.org/x/sys/unix"
 	"net/http"
 	"os"
@@ -21,12 +21,12 @@ var (
 	Port        string = "8082"
 	Addr        string = "0.0.0.0"
 	RequireAuth bool   = false
-	PasswdFile  string = "/var/lib/manhttpd/authuwu"
+	PasswdFile  string = "/var/lib/manweb/authuwu.db"
 	TldrPages   bool   = false
-	TldrDir     string = "/var/lib/manhttpd/tldr"
+	TldrDir     string = "/var/lib/manweb/tldr"
 	TldrGitSrc  string = "https://github.com/tldr-pages/tldr.git"
 	EnableStats bool   = false
-	StatisticDB string = "/var/lib/manhttpd/manhttpd.db"
+	StatisticDB string = "/var/lib/manweb/manweb.db"
 	UseTLS      bool   = false
 	TLSCertFile string = ""
 	TLSKeyFile  string = ""
