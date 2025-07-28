@@ -5,6 +5,7 @@ import (
 	"git.sophuwu.com/manweb/CFG"
 	"git.sophuwu.com/manweb/embeds"
 	"git.sophuwu.com/manweb/neterr"
+	"git.sophuwu.com/manweb/stats"
 	"net/http"
 	"os/exec"
 	"path/filepath"
@@ -82,5 +83,6 @@ func Http(w http.ResponseWriter, r *http.Request, q string) bool {
 		return true
 	}
 	embeds.WriteHtml(w, r, m.Title(), html, q, m.Url())
+	stats.Count(m.Url())
 	return true
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"git.sophuwu.com/authuwu"
+	cookies "git.sophuwu.com/authuwu/cookie"
 	"git.sophuwu.com/authuwu/userpass"
 	"git.sophuwu.com/gophuwu/flags"
 	"git.sophuwu.com/manweb/CFG"
@@ -10,6 +11,7 @@ import (
 	"git.sophuwu.com/manweb/logs"
 	"git.sophuwu.com/manweb/manpage"
 	"git.sophuwu.com/manweb/neterr"
+	"git.sophuwu.com/manweb/stats"
 	"git.sophuwu.com/manweb/tldr"
 	"golang.org/x/term"
 	"net/http"
@@ -96,8 +98,13 @@ func main() {
 	if CFG.RequireAuth {
 		err = authuwu.OpenDB(CFG.PasswdFile)
 		logs.CheckFatal("opening password database", err)
+		_ = cookies.PurgeExpiredCookies()
 		PageHandler = authuwu.NewAuthuwuHandler(PageHandler, time.Hour*24*3, embeds.LoginPage)
 		defer authuwu.CloseDB()
+	}
+	if CFG.EnableStats {
+		stats.OpenDB()
+		defer stats.CloseDB()
 	}
 	CFG.ListenAndServe(Handler)
 }
@@ -130,6 +137,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request, q string) {
 		}
 	}
 	embeds.WriteHtml(w, r, "Search", output, q, "")
+	stats.SpecialCount("Search")
 }
 
 var PageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -147,7 +155,7 @@ var PageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *h
 		}
 	}
 	if name == "" {
-		embeds.WriteHtml(w, r, "Index", "", "", "")
+		embeds.WriteHtml(w, r, "Index", stats.Html(), "", "")
 		return
 	}
 	if embeds.Help(w, r, name) {

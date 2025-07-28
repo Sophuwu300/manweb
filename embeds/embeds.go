@@ -7,6 +7,7 @@ import (
 	"git.sophuwu.com/manweb/CFG"
 	"git.sophuwu.com/manweb/logs"
 	"git.sophuwu.com/manweb/neterr"
+	"git.sophuwu.com/manweb/stats"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -22,6 +23,9 @@ var help string
 
 //go:embed template/login.html
 var LoginPage string
+
+//go:embed template/stats.html
+var statsPage string
 
 //go:embed static/*
 var static embed.FS
@@ -78,6 +82,7 @@ type Page struct {
 }
 
 func OpenAndParse() {
+	stats.T = template.Must(template.New("stats").Parse(statsPage))
 	openStatic()
 	var e error
 	t, e = template.New("index.html").Parse(index)
@@ -111,6 +116,7 @@ func WriteError(w http.ResponseWriter, r *http.Request, err neterr.NetErr, q str
 		Query:    q,
 	}
 	t.ExecuteTemplate(w, "index.html", p)
+	stats.SpecialCount("Error")
 }
 
 func WriteHtml(w http.ResponseWriter, r *http.Request, title, html string, q string, setRawQuery ...string) {

@@ -6,6 +6,7 @@ import (
 	"git.sophuwu.com/manweb/embeds"
 	"git.sophuwu.com/manweb/logs"
 	"git.sophuwu.com/manweb/neterr"
+	"git.sophuwu.com/manweb/stats"
 	"net/http"
 	"os"
 	"strings"
@@ -222,5 +223,6 @@ func Http(w http.ResponseWriter, r *http.Request, q string) bool {
 		return true
 	}
 	embeds.WriteHtml(w, r, "TLDR: "+name, html, q, q)
+	stats.Count(q)
 	return true
 }

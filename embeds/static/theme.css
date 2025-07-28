@@ -279,3 +279,45 @@ p.list-item.tldr, .desc.tldr:first-of-type {
     padding: 0;
     height: 1.25lh;
 }
+.stats span {
+    margin-top: 1ch;
+}
+.section-table {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.section-row {
+    display: flex;
+    flex-direction: column;
+}
+.section-row:first-child  {
+    border-right: var(--fg-color) 1px solid;
+}
+.section-row:not(:first-child) > span:first-child  {
+    font-weight: bold;
+}
+.section-row > span {
+    width: 10ch;
+    margin-left: 1ch;
+}
+.section-row:first-child > span {
+    margin-left:  0;
+}
+.query-table {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+.query-table > div {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+}
+.query-table span {
+    width: 30ch;
+}
+.stats {
+    margin: 1ch;
+    padding: 1ch;
+}

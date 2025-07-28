@@ -1,0 +1,61 @@
+<br>
+<h2>
+    Statistics
+</h2>
+<div class="stats">
+    <h3>
+        Totals:
+    </h3>
+    <div class="query-table">
+        <div>
+            <span>Number of queries:</span><span>{{ .TotalLoads }}</span>
+        </div>
+        <div>
+            <span>Total pages loaded:</span><span>{{ .TotalPages }}</span>
+        </div>
+        <div>
+            <span>Unique pages loaded:</span><span>{{ .UniquePages }}</span>
+        </div>
+        <div>
+            <span>Searches made:</span><span>{{ .Searches }}</span>
+        </div>
+        <div>
+            <span>Errors encountered:</span><span>{{ .Errors }}</span>
+        </div>
+    </div>
+</div>
+<div class="stats">
+    <h3>
+        Pages loaded by section:
+    </h3>
+    <div class="section-table">
+        <div class="section-row">
+            <span>Section</span>
+            <span>Total</span>
+            <span>Unique</span>
+        </div>
+        {{ range .TotalSections }}
+        <div class="section-row">
+            <span>{{ .Section }}</span>
+            <span>{{ .Count }}</span>
+            <span>{{ .Unique }}</span>
+        </div>
+        {{ end }}
+    </div>
+</div>
+<div class="stats">
+    <h3>
+        Most queried pages:
+    </h3>
+    <style>
+
+    </style>
+    <div class="query-table">
+        {{ range .AllPages }}
+        <div>
+            <span><a href="?{{ .Page }}">{{ .Page }}</a></span>
+            <span>{{ .Count }}</span>
+        </div>
+        {{ end }}
+    </div>
+</div>
