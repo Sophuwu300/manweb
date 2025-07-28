@@ -46,7 +46,12 @@ func (m *ManPage) Find(q string) bool {
 	if !ManDotName.MatchString(q) {
 		return false
 	}
-	b, err := exec.Command(CFG.ManCmd, "--where", q).Output()
+	args := []string{"--where", q}
+	if strings.Contains(q, ".") {
+		m.Name, m.Section = ext(q)
+		args = []string{"-s" + m.Section, "--where", m.Name}
+	}
+	b, err := exec.Command(CFG.ManCmd, args...).Output()
 	if err != nil {
 		return false
 	}
@@ -82,7 +87,7 @@ func Http(w http.ResponseWriter, r *http.Request, q string) bool {
 	if embeds.ChkWriteError(w, r, err, q) {
 		return true
 	}
-	embeds.WriteHtml(w, r, m.Title(), html, q, m.Url())
+	embeds.WriteHtml(w, r, m.Title(), html, m.Url(), m.Url())
 	stats.Count(m.Url())
 	return true
 }

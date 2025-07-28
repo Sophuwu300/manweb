@@ -100,13 +100,14 @@ func main() {
 		logs.CheckFatal("opening password database", err)
 		_ = cookies.PurgeExpiredCookies()
 		PageHandler = authuwu.NewAuthuwuHandler(PageHandler, time.Hour*24*3, embeds.LoginPage)
-		defer authuwu.CloseDB()
+		logs.AddOnExit(func() { authuwu.CloseDB() })
 	}
 	if CFG.EnableStats {
 		stats.OpenDB()
-		defer stats.CloseDB()
+		logs.AddOnExit(func() { stats.CloseDB() })
 	}
 	CFG.ListenAndServe(Handler)
+	logs.Exit(0)
 }
 
 var RxWords = regexp.MustCompile(`("[^"]+")|([^ ]+)`).FindAllString
@@ -131,7 +132,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request, q string) {
 		return
 	}
 	var output string
-	for _, line := range RxWhatIs(string(b), -1) { // strings.Split(string(b), "\n") {
+	for _, line := range RxWhatIs(string(b), -1) {
 		if len(line) == 4 {
 			output += fmt.Sprintf(`<p><a href="?%s.%s">%s (%s)</a> - %s</p>%c`, line[1], line[2], line[1], line[2], line[3], 10)
 		}
@@ -146,7 +147,9 @@ var PageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *h
 	if r.Method == "POST" {
 		n := r.PostFormValue("q")
 		n = strings.TrimSpace(n)
-		if n != "" {
+		if n == "" {
+			name = ""
+		} else if n != "" {
 			name = n
 			if strings.ContainsAny(name, `"*?^|`) {
 				SearchHandler(w, r, name)

@@ -1,0 +1,44 @@
+version: "1.5.0"
+name: "manweb"
+arch: "arm64"
+platform: "linux"
+section: "default"
+priority: "extra"
+replaces:
+provides:
+depends:
+- mandoc
+- git
+recommends:
+suggests:
+conflicts:
+maintainer: "sophuwu <sophie@sophuwu.com>"
+description: |
+  manweb is a frontend for the linux man pages.
+  Offering a functional, minimalistic interface for viewing and finding pages.
+  - Search directly by page name
+  - Search by keyword/wildcard
+  - Search by section number
+  - Full regex name and description search
+  It is useful for serving manpages over a network, or for browsing them
+  in a web browser.
+vendor: "sophuwu.com"
+homepage: "https://git.sophuwu.com/manweb"
+license: "MIT"
+changelog: ""
+contents:
+- src: ../build/manweb_arm64
+  dst: /usr/bin/manweb
+- src: ./manweb-passwd
+  dst: /usr/bin/manweb-passwd
+- src: ./manweb.service
+  dst: /etc/manweb/manweb.service
+  type: config
+- src: ./manweb.conf
+  dst: /etc/manweb/manweb.conf
+  type: config
+overrides:
+  deb:
+    scripts:
+      postinstall: ./postinstall.sh
+      preinstall: ./preinst.sh

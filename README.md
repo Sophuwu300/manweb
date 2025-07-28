@@ -17,19 +17,15 @@ To use tldr, `git` will be required to download the tldr pages.
 - Able to correctly interpret and display incorrectly formatted man pages, to a degree.
 - Auto updates man pages when new packages are installed or removed using standard installation methods.
 
-## Extra Information
-### Performance:
-A query for all user or sudo  commands that list or organise information, shows 119 commands in 53ms.
-Searching for all C libraries for parsing, shows 38 libraries in 48ms.
+## Pictures
 
-If I wish to find a command that configures a service, I would use:
-network interfaces,
 
 # Installation Using Apt
 
 Simply run the following commands to add my repository and install the package. This will install the latest release and automatically update the server when new versions are released.
-This will also make the server available as a systemd service, and start it automatically. You may still want to configure a user for the service as some manuals may be in user home directories.
-This isn't common on most systems, so the default configuration should work out of the box in most cases.
+This will also make the server available as a systemd service, and start it automatically. 
+
+You can read [addrepo.sh.txt](https://cdn.sophuwu.com/deb/addrepo.sh.txt) in your browser.
 
 ```bash
 curl https://cdn.sophuwu.com/deb/addrepo.sh | sudo sh
@@ -39,11 +35,18 @@ sudo apt install manweb
 # Compiling From Source
 
 ## Dependencies
-If you are not installing from apt, you will need to install the mandoc package.
-* Ubuntu/Debian dependency installation: `sudo apt-get install mandoc -y`
+To compile the binary, the `go` compiler is required [go.dev](https://go.dev/doc/install), `make`
+is recommended for compilation.
 
-If you wish to compile from source, you will need Go installed.\
-* Golang installation instructions at [go.dev](https://go.dev/doc/install).
+The following packages are required
+* `mandoc`
+* `make`
+* `git` - Optional, for tldr support
+```bash
+sudo apt install mandoc make git
+```
+The go compiler is required to compile
+*  [go.dev](https://go.dev/doc/install).
 
 
 ## Compiling The Binary
@@ -55,75 +58,65 @@ cd manweb
 # build binary
 make build
 make install_bin
-
-# build a debian package and install it
-make build_deb
-make install_deb
 ```
 
 # Using As Systemd Service:
 
-The provided service file should work on most systems, but you may need to edit it to fit your needs.\
-It will open a http server on port 8082 available through all network interfaces.\
-You should change the `ListenAddr` variable to `127.0.0.1` and use a secure reverse proxy if you are on a public network.\
-TLS and authentication are not implemented in this server.
-
-### Variables in the service file:
-
-Environment Variables:\
-`HOSTNAME`: Used for displaying the hostname on the webpage.\
-`ListenPort`: If unset, the server will default to 8082.\
-`ListenAddr`: This should be changed if you are on a public network.\
-
-### System Variables:
-
-`User`: Reccomended to use your login user so the service can access your ~/.local man pages. But not required.\
-`ExecStart`: The path to the manweb binary. If you installed it to /usr/local/bin, you can leave it as is.\
-`WorkingDirectory`: This should be /tmp since the server doesn't need to write to disk.\
-
-```sh
-# to edit paths, users, and environment variables if needed
-nano manweb.service 
-
-# install the service file to systemd and load it
-sudo install manweb.service /etc/systemd/system/manweb.service
+If you used the installer script, the service will be automatically installed. You just need to enable it.
+```bash
 sudo systemctl daemon-reload
-
-# start the service and check its status
-sudo systemctl start manweb.service
-sudo systemctl status manweb.service
-
-# to keep the service running after a reboot
-sudo systemctl enable manweb.service
-
-# to stop the service and disable it from restarting
-sudo systemctl stop manweb.service
-sudo systemctl disable manweb.service
-
-# to edit the server configuration after installation
-sudo systemctl edit manweb.service
-sudo systemctl daemon-reload 
-sudo systemctl reload-or-restart manweb.service
-sudo systemctl status manweb.service
+sudo systemctl enable manweb
+sudo systemctl start manweb
 ```
+
+# Configuring The Server
+The server can be configured by editing the `/etc/manweb/manweb.conf` file.
+Simply set the options how you like, and restart the service.
+```bash
+sudo nano /etc/manweb/manweb.conf
+sudo systemctl restart manweb
+```
+
+# Setting A Password
+To set a password for the web interface, you must enable the `require_auth` option in `/etc/manweb/manweb.conf`.
+Generally, there is no need to change the `auth_file` option.
+
+Once you have enabled `require_auth`, you can set a password `manweb-passwd` while the service is not running.
+```bash
+sudo systemctl stop manweb
+sudo manweb-passwd username
+sudo systemctl start manweb
+```
+The `manweb-passwd` command will prompt you for a password.
+If you enter a password, it will be set for the specified user.
+If you leave the password blank, it will remove the user from the authentication database.
+
+If you set the `require_auth` option to `no`, the server will ignore the authentication database and allow access to the web interface without a password.
+This is the default behavior.
+'
 
 # Accessing the Web Interface
 
-Open your web browser and navigate to `http://localhost:8082` if you are running the server locally or the remote server's IP address or hostname.\
-To search with regex, you can use the search bar at the top of the page with `-r` at the beginning of the search term.\
-To look into a specific section, you can add `-sN` to the search term where N is the section number.\
-If no section is specified, the server will display with the same priority as the defualt `man` command.\
-Glob patterns are also supported in the search bar if regex not enabled.\
+If you have installled the service and are running with default settings, you should be able to access 
+the web interface on [http://localhost:8082](http://localhost:8082).
+By default, the web interface binds to `0.0.0.0:8082`.
 
-## Example Usage:
+### Accessibility Options
+* For the best reading experience, the web interface has 3 themes: light, dark, and yellow filter.
+* The text contrast can be adjusted to make it easier to read.
+* The settings tab has an adjustable font scale, allowing easier uniform scaling on any device.
 
-- `ls*`: List all pages that begin with `ls`, including `ls`, `lsblk`, `lsmod`, etc.
-- `-r ^ls`: Same as above but with regex. Usually more useful for with multiple queries and logical operators. Like finding any C++ reference to `std::string` and `std::vector`.
-- `ls` or `ls.1`: Open the page for the `ls` user command. This is orignal man behavior.
-- `-r ^ls -s1`: List all pages that begin with `ls` in section 1 (user/bin commands). Useful for finding commands that list any information without requiring sudo.
-- `*config* -s8`: List pages for sudo commands containing keyword `config`. this can will show you commands that edit critical system files.  
-- `vsftpd.5`: Open the manual page for vsftpd confuguration file if vsftpd is installed. This will show you how to configure the ftp server.
-- `vsftpd.8`: Open the manual page for vsftpd executable if vsftpd is installed. This will show how to call the ftp server from the command line.
+### Searching
+Regex and wildcards are supported in the search bar.
+You can also filter by section, or page function.
+
+* `ls*`: List all pages that begin with `ls`, including `ls`, `lsblk`, `lsmod`, etc.
+* `-r ^ls`: Same as above but with regex.
+* `ls` or `ls.1`: Open the page for the `ls` user command. This is orignal man behavior.
+* `-r ^ls -s1`: List all pages that begin with `ls` in section 1 (user/bin commands). Useful for finding commands that list any information without requiring sudo.
+* `*config* -s8`: List pages for sudo commands containing keyword `config`. this can will show you commands that edit critical system files.  
+* `vsftpd.5`: Open the manual page for vsftpd confuguration file if vsftpd is installed. This will show you how to configure the ftp server.
+* `vsftpd.8`: Open the manual page for vsftpd executable if vsftpd is installed. This will show how to call the ftp server from the command line.
 
 ## License
 
