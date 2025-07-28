@@ -58,7 +58,7 @@ func setPasswd() {
 		fmt.Printf("delete user %s? (y/N): ", u)
 		in = make([]byte, 1)
 		os.Stdin.Read(in)
-		if in[0] != 'y' && in[0] != 'Y' {
+		if in[0] == 'y' || in[0] == 'Y' {
 			userpass.DeleteUser(u)
 			fmt.Printf("User %s deleted.\n", u)
 			return
