@@ -17,16 +17,6 @@ To use tldr, `git` will be required to download the tldr pages.
 - Able to correctly interpret and display incorrectly formatted man pages, to a degree.
 - Auto updates man pages when new packages are installed or removed using standard installation methods.
 
-## Gallery
-[Video of Navigation](https://cdn.sophuwu.com/img/manhttpd-demo/manhttpd-v2025-07.mp4)
-
-<img src="https://cdn.sophuwu.com/img/manhttpd-demo/page.png" width="31%">
-<img src="https://cdn.sophuwu.com/img/manhttpd-demo/search.png" width="33%">
-<img src="https://cdn.sophuwu.com/img/manhttpd-demo/stats.png" width="33%">
-<img src="https://cdn.sophuwu.com/img/manhttpd-demo/dark.png" width="31%"> 
-<img src="https://cdn.sophuwu.com/img/manhttpd-demo/light.png" width="33%"> 
-<img src="https://cdn.sophuwu.com/img/manhttpd-demo/yellow.png" width="33%">
-
 # Installation Using Apt
 
 Simply run the following commands to add my repository and install the package. This will install the latest release and automatically update the server when new versions are released.
@@ -136,3 +126,13 @@ contant info:
 * discord: [@sophuwu](https://discord.com/users/sophuwu)
 * email: [sophie@sophuwu.com](mailto:sophie@sophuwu.com)
 
+
+## Gallery
+[Video of Navigation](https://cdn.sophuwu.com/img/manhttpd-demo/manhttpd-v2025-07.mp4)
+
+<img src="https://cdn.sophuwu.com/img/manhttpd-demo/page.png" width="31%">
+<img src="https://cdn.sophuwu.com/img/manhttpd-demo/search.png" width="33%">
+<img src="https://cdn.sophuwu.com/img/manhttpd-demo/stats.png" width="33%">
+<img src="https://cdn.sophuwu.com/img/manhttpd-demo/dark.png" width="31%"> 
+<img src="https://cdn.sophuwu.com/img/manhttpd-demo/light.png" width="33%"> 
+<img src="https://cdn.sophuwu.com/img/manhttpd-demo/yellow.png" width="33%">
