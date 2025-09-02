@@ -8,6 +8,9 @@ ExecStart=/usr/bin/manweb
 WorkingDirectory=/var/lib/manweb
 Type=simple
 
+Restart=on-failure
+RestartSec=3
+
 User=manweb
 Group=manweb
 
